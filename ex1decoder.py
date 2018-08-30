@@ -2,7 +2,6 @@
 
 from sys import argv, exit
 
-
 def main():
 	if len(argv) != 3:
 		print("Usage: ./ex1decoder.py encodedFile freqFile")
@@ -15,14 +14,14 @@ def main():
 	fin = open(argv[2], "r")
 	frequencies = {}
 	while 1:
-		text2 = fin.readline().strip()
-		if text2 == '':
+		freqLine = fin.readline().strip()
+		if freqLine == '':
 			break
-		line = text2.split(",")
+		line = freqLine.split(",")
 		frequencies[line[0]] = line[1]
 
 	correctKey = shift_cipher(frequencies, text)
-	print("The correct key is %d" %(correctKey))
+	print("\nThe correct key is %d" %(correctKey))
 	return 0
 
 def shift_cipher(frequencies, encodedText):
