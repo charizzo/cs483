@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from sys import argv, exit
-from itertools import combinations_with_replacement
 
 def main():
 	if len(argv) != 4:
@@ -49,7 +48,7 @@ def shift_cipher(frequencies, encodedText, lengthOfText):
 		sOs = calculateFrequencies(frequencies,decryptedFreqs, lengthOfText)
 		
 		if abs(sOs - target) < currentMin:
-			writeDecodedToFile(decodedText)
+			writeDecodedToFile(decodedText,"shiftCipherOutput.txt")
 			savedKey = i
 			currentMin = abs(sOs - target)
 		print("Key %d yields differential %f" %(i, abs(sOs - target)))
@@ -62,6 +61,9 @@ def vig_cipher(frequencies, encodedText):
 	minDifferential = 100000
 	savedPeriod = -1
 	target = 0.066
+	decryptedCharCount = {}
+	amountOfLetters = 0
+
 	for i in range(2,11):
 		for letter in list(frequencies.keys()):
 			firstLetterDict[letter] = 0
@@ -75,47 +77,36 @@ def vig_cipher(frequencies, encodedText):
 		if abs(sOs - target) < minDifferential:
 			savedPeriod = i
 			minDifferential = abs(sOs - target)
-		
-	keyFind(savedPeriod,encodedText, frequencies)
-		
-def keyFind(period,encodedText, frequencies):
-	nums = [0] * 26
-	decryptedCharCount = {}
-	target = 0.066
-	currentMin = 100000
-	savedKey = []
 
-	for i in range (0,26):
-		nums[i] = i
-	comb = combinations_with_replacement(nums, period)
+	key = [''] * savedPeriod
 
-	for key in list(comb):
-		for letter in list(frequencies.keys()):
-			decryptedCharCount[letter] = 0 
-		for i in range (0,112):
-			char = ord(encodedText[i]) - key[i % period]
-			if char < 97:
-				char += 26
-			decryptedCharCount[chr(char)] = 1 + decryptedCharCount[chr(char)]
-		
-		sOs = calculateFrequencies(frequencies,decryptedCharCount,112)
-		
-		if abs(sOs - target) < currentMin:
-			savedKey = key
-			currentMin = abs(sOs - target)
-			print("New Min Found: %f" %(currentMin))
-			print(savedKey)
-
-	
-#	print(savedKey)	
-	for j in savedKey:
-#		num =  - j
-#		if num < 97:
-#			num += 26
-		print(chr(97 + j))
-
-	return savedKey
+	for i in range(0,savedPeriod):
+		minDifferential = 100000
+		for j in range(0,26):
+			for letter in list(frequencies.keys()):
+				decryptedCharCount[letter] = 0
+			amountOfLetters = 0
+			for k in range(i,len(encodedText),savedPeriod):
+				char = ord(encodedText[k]) - j
+				if char < 97:
+					char += 26
+				decryptedCharCount[chr(char)] = 1 + decryptedCharCount[chr(char)]
+				amountOfLetters += 1
 			
+			sOs = calculateFrequencies(frequencies, decryptedCharCount, amountOfLetters) 
+			
+			if abs(sOs - target) < minDifferential:
+				key[i] = chr(j)
+				minDifferential = abs(sOs - target)
+	
+	decodedText = ''
+	for i in range(0,len(encodedText)):
+		char = ord(encodedText[i]) - (ord(key[i % savedPeriod]))
+		if char < 97:
+			char += 26
+		decodedText += chr(char)
+
+	writeDecodedToFile(decodedText,"vigCipherOutput.txt")
 
 def calculateFrequencies(frequencies, decryptedFreqs, length):
 	freqs = list(frequencies.values())
@@ -127,8 +118,8 @@ def calculateFrequencies(frequencies, decryptedFreqs, length):
 
 	return sumOfSquares
 
-def writeDecodedToFile(text):
-	fout = open("decodedOutput.txt", "w")
+def writeDecodedToFile(text, filename):
+	fout = open(filename, "w")
 	fout.write(text)
 	fout.close()
 
