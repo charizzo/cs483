@@ -61,6 +61,19 @@ def calculateFrequencies(frequencies, decryptedFreqs, length):
 		sumOfSquares += float(freqs[i]) * (float(dFreqs[i]) / length)
 
 	return sumOfSquares
+def vigenere_cipher(frequencies,encodedText):
+	
+	j=0
+	for i in range(0,len(encodedText)):
+		
+
+
+
+
+
+
+
+
 
 def writeDecodedToFile(text):
 	fout = open("decodedOutput.txt", "w")
