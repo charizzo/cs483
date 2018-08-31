@@ -62,9 +62,16 @@ def calculateFrequencies(frequencies, decryptedFreqs, length):
 
 	return sumOfSquares
 def vigenere_cipher(frequencies,encodedText):
-	
+	decryptedfreq={}
+	target = .066
 	j=0
 	for i in range(0,len(encodedText)):
+		for letter in list(frequencies.keys())
+			decryptedfreq[letter]=0
+		decryptedfreq[char(encodedText[i+j]]
+
+
+
 		
 
 
