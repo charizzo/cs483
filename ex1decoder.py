@@ -105,7 +105,12 @@ def vig_cipher(frequencies, encodedText):
 		if char < 97:
 			char += 26
 		decodedText += chr(char)
-
+	
+	print("Key Period: %d" %(savedPeriod))
+	for i in range(0,len(key)):
+		print(chr(ord(key[i]) + 97),end="")
+	print()
+	
 	writeDecodedToFile(decodedText,"vigCipherOutput.txt")
 
 def calculateFrequencies(frequencies, decryptedFreqs, length):
