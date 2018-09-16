@@ -46,7 +46,7 @@ def main():
 				cipherText = blockCipher.encrypt(bytes(IV))
 				fout.write(cipherText)
 				first = False
-				lastMessageBlock = cipherText
+				lastMessageBlock = bytearray(cipherText)
 				print(lastMessageBlock)
 				print()
 			else:
@@ -57,24 +57,26 @@ def main():
 				print(messageBlock)
 				temp = blockCipher.encrypt(bytes(messageBlock))
 				fout.write(temp)
-				lastMessageBlock = temp
+				lastMessageBlock = bytearray(temp)
 				print(lastMessageBlock)
 				print()
 
-	messageBlock = ''
 	if(flag):
-		for i in range(0,16):
-			messageBlock += (16).to_bytes(1,byteorder='big')
-	
+	#	for i in range(0,16):
+	#		messageBlock[i] = (16).to_bytes(1,byteorder='big')
+		messageBlock = bytearray([0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10])
+		
 		print(messageBlock)
-	
+#		print(type(messageBlock))
+#		print(type(lastMessageBlock))
+
 		for i in range(0,16):
 			messageBlock[i] ^= lastMessageBlock[i]
 
 		print(messageBlock)
 		cipherText = blockCipher.encrypt(bytes(messageBlock))
 		fout.write(cipherText)
-		print(cipherText)
+		print(bytearray(cipherText))
 		print()
 
 	fout.close()
