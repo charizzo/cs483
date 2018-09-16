@@ -61,10 +61,10 @@ def main():
 				print(lastMessageBlock)
 				print()
 
-	messageBlock = ''
 	if(flag):
+		messageBlock = [1] * 16
 		for i in range(0,16):
-			messageBlock += (16).to_bytes(1,byteorder='big')
+			messageBlock[i] = (16).to_bytes(1,byteorder='big')
 	
 		print(messageBlock)
 	
