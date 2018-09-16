@@ -22,9 +22,6 @@ def main():
 	first = True
 
 	fout.write(IV)
-	print("IV:")
-	print(IV)
-	print();
 	with open(argv[4],"rb") as inputFile:
 		while 1:
 			messageBlock = bytearray(inputFile.read(16).strip())
@@ -38,46 +35,28 @@ def main():
 				break
 
 			if(first):	
-				print(messageBlock)
 				for i in range(0, 16):
 					IV[i] ^= messageBlock[i]
 
-				print(IV)
 				cipherText = blockCipher.encrypt(bytes(IV))
 				fout.write(cipherText)
 				first = False
 				lastMessageBlock = bytearray(cipherText)
-				print(lastMessageBlock)
-				print()
 			else:
-				print(messageBlock)
 				for i in range(0,16):
 					messageBlock[i] ^= lastMessageBlock[i]
 				
-				print(messageBlock)
 				temp = blockCipher.encrypt(bytes(messageBlock))
 				fout.write(temp)
 				lastMessageBlock = bytearray(temp)
-				print(lastMessageBlock)
-				print()
 
 	if(flag):
-	#	for i in range(0,16):
-	#		messageBlock[i] = (16).to_bytes(1,byteorder='big')
 		messageBlock = bytearray([0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10])
-		
-		print(messageBlock)
-#		print(type(messageBlock))
-#		print(type(lastMessageBlock))
-
 		for i in range(0,16):
 			messageBlock[i] ^= lastMessageBlock[i]
 
-		print(messageBlock)
 		cipherText = blockCipher.encrypt(bytes(messageBlock))
 		fout.write(cipherText)
-		print(bytearray(cipherText))
-		print()
 
 	fout.close()
 
