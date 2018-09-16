@@ -15,22 +15,22 @@ def main():
 	hex_key=f.read()
 	key=bytes.fromhex(hex_key)
 	decipher = AES.new(key, AES.MODE_ECB)
-	output=[None]*16	
-	iv=[None]*16
-	output=[None]*16
-	bytearray(output)
+
+	o=open(outputfile,'w')
+	output=[1]*16
+
 	with open(encryptedfile, 'rb') as f:
-		for i in range(16):
-			iv[i]=bytearray(f.read(1))
-		print(iv)
-		while f != '':
-			msg=f.read(16)
+		iv=bytearray(f.read(16).strip())
+	#	print(len(iv))
+		while 1:
+			msg=f.read(16).strip()
+			if msg == bytes('','utf-8'):
+				break
 			msg=bytearray(decipher.decrypt(msg))
+			print(msg)
 			for x in range(16):
 				output[x]=iv[x] ^ msg[x] 
-			with open(outputfile,'w') as o:
-				for x in range(16):
-					o.write(str(output[x]))
+				o.write(chr(output[x]))
 			iv=msg
 
 
