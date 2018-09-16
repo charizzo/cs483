@@ -18,6 +18,7 @@ def main():
 
 	o=open(outputfile,'w')
 	output=[1]*16
+	final=""
 
 	with open(encryptedfile, 'rb') as f:
 		iv=bytearray(f.read(16).strip())
@@ -26,17 +27,22 @@ def main():
 			msg=f.read(16).strip()
 			if msg == bytes('','utf-8'):
 				break
-			msg=bytearray(decipher.decrypt(msg))
-			print(msg)
+			msg2=bytearray(decipher.decrypt(msg))
+			print(msg2)
 			for x in range(16):
-				output[x]=iv[x] ^ msg[x] 
-				o.write(chr(output[x]))
+				output[x]=iv[x] ^ msg2[x] 
+				final+=(chr(output[x]))
+				print(chr(output[x]))
 			iv=msg
 
-
-
-
-
+	shred=ord(final[len(final)-1])
+	if shred == 0:
+		o.write(final)
+	else:
+		final = final[:-shred]
+		print(shred)
+		o.write(final)
+	
 
 
 
