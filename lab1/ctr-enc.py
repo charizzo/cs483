@@ -34,7 +34,9 @@ def main():
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
 	fout.write(IV)
 	for i in range (0,counter):
-		interMed = bytearray(cipher.encrypt(bytes(IV)))
+		bitch = int.from_bytes(IV,byteorder='big') + i + 1
+		biggrBitcH = bytes(bitch)
+		interMed = bytearray(cipher.encrypt(biggrBitcH))
 		for j in range (0,len(messageBlocks[i])):
 			interMed[i] ^=	messageBlocks[i][j]
 		fout.write(interMed)
