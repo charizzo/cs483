@@ -28,11 +28,11 @@ def main():
 			if msg == bytes('','utf-8'):
 				break
 			msg2=bytearray(decipher.decrypt(msg))
-			print(msg2)
+		#	print(msg2)
 			for x in range(16):
 				output[x]=iv[x] ^ msg2[x] 
 				final+=(chr(output[x]))
-				print(chr(output[x]))
+				#print(chr(output[x]))
 			iv=msg
 
 	shred=ord(final[len(final)-1])
