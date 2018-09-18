@@ -21,17 +21,17 @@ def main():
 	final=""
 
 	with open(encryptedfile, 'rb') as f:
-		iv=f.read(16).strip()
+		iv=f.read(16)
 		intiv=int.from_bytes(iv, byteorder='big')
 		while 1:
-			msg=bytearray(f.read(16).strip())
+			msg=bytearray(f.read(16))
 			if msg == bytes('','utf-8'):
 				break
 			iv2=bytearray(decipher.decrypt(iv))
 #			print(iv2)
 			print(len(iv2))
 			print(len(msg))
-			for x in range(13):
+			for x in range(16):
 				output[x]=iv2[x] ^ msg[x] 
 				final+=(chr(output[x]))
 		#		print(chr(output[x]))
