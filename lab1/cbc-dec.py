@@ -21,18 +21,20 @@ def main():
 	final=""
 
 	with open(encryptedfile, 'rb') as f:
-		iv=bytearray(f.read(16).strip())
+		iv=bytearray(f.read(16))
 	#	print(len(iv))
 		while 1:
-			msg=f.read(16).strip()
-			if msg == bytes('','utf-8'):
+			msg=f.read(16)
+		#	if msg == bytes('','utf-8'):
+			if len(msg) == 0:
 				break
 			msg2=bytearray(decipher.decrypt(msg))
-		#	print(msg2)
+		#	print(len(msg2))
+		#	print(len(iv))
 			for x in range(16):
 				output[x]=iv[x] ^ msg2[x] 
 				final+=(chr(output[x]))
-				#print(chr(output[x]))
+		#		print(chr(output[x]))
 			iv=msg
 
 	shred=ord(final[len(final)-1])
