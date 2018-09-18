@@ -30,16 +30,19 @@ def main():
 	fin.close()	
 
 	IV = os.urandom(16)
-	
+	bitch=int.from_bytes(IV,byteorder='big')
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
 	fout.write(IV)
+
 	for i in range (0,counter):
-		bitch = int.from_bytes(IV,byteorder='big') + i + 1
-		biggrBitcH = bytes(bitch)
-		interMed = bytearray(cipher.encrypt(biggrBitcH))
+		strmsg=format(bitch,'0128b')
+		interMed = bytearray(cipher.encrypt(strmsg))
+		print(interMed)
 		for j in range (0,len(messageBlocks[i])):
+			print()
 			interMed[i] ^=	messageBlocks[i][j]
 		fout.write(interMed)
+		bitch+=1
 
 	fout.close()
 #	with Pool(4) as p:

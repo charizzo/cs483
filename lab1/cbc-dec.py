@@ -16,17 +16,16 @@ def main():
 	key=bytes.fromhex(hex_key)
 	decipher = AES.new(key, AES.MODE_ECB)
 
-	o=open(outputfile,'w')
+	o=open(outputfile,'wb')
 	output=[1]*16
 	final=""
 
 	with open(encryptedfile, 'rb') as f:
 		iv=bytearray(f.read(16))
-	#	print(len(iv))
 		while 1:
 			msg=f.read(16)
-		#	if msg == bytes('','utf-8'):
-			if len(msg) == 0:
+			if msg == bytes('','utf-8'):
+		#	if len(msg) == 0:
 				break
 			msg2=bytearray(decipher.decrypt(msg))
 		#	print(len(msg2))
@@ -34,16 +33,16 @@ def main():
 			for x in range(16):
 				output[x]=iv[x] ^ msg2[x] 
 				final+=(chr(output[x]))
-		#		print(chr(output[x]))
+				print(chr(output[x]))
 			iv=msg
 
 	shred=ord(final[len(final)-1])
 	if shred == 0:
-		o.write(final)
+		o.write(str.encode(final))
 	else:
 		final = final[:-shred]
 		print(shred)
-		o.write(final)
+		o.write(str.encode(final))
 	
 
 

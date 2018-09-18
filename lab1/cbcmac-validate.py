@@ -1,29 +1,49 @@
 #!/usr/bin/env python3
-from Crypto.Cipher import AES
+
 from sys import argv, exit
+from Crypto.Cipher import AES 
+from Crypto import Random
+import os.path
 import sys
 
-
 def main():
+	if len(argv) != 7:
+		print("Usage: ./cbcmac-tag.py -k <key file> -m <message file> -t <tag file>")
+		raise Exception("Bad Command Line Args")	
+	fin = open(argv[2],"r")
+	hexKey = fin.read().strip()
+	fin.close()
+	fout = open(argv[6],"rb")
+	blockCipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
+	fin = open(argv[4],"rb")
+	msgToTag = fin.read().strip()
+	msgSize = len(msgToTag)
+	fin.close()
+	fin = open(argv[4],"rb")
+	strmsg=format(msgSize,'0128b')
+	#SIZE OF MESSAGE NEEDS TO BE PADDED
+	prevBlock = bytearray(blockCipher.encrypt(strmsg))
+	while 1:
+		msgToTag = bytearray(fin.read(16).strip())
+		if(len(msgToTag) != 16 and msgToTag != bytes('','utf-8')):
+			padding = 16 - len(msgToTag)
+			for i in range(0,padding):
+				msgToTag += padding.to_bytes(1,byteorder='big')
+		
+		if msgToTag == bytes('','utf-8'):
+			break
+		for i in range(0,16):
+			msgToTag[i] ^= prevBlock[i]
+		prevBlock = bytearray(blockCipher.encrypt(bytes(msgToTag)))
 	
-	keyfile=sys.argv[1]
-	messagefile=sys.argv[2]
-	tagfile=sys.argv[3]
+	fin.close()
+	stringcmpr=bytearray(fout.read())
+	if stringcmpr == prevBlock:
+		print("VALIDATED")
+	else:
+		print("sorry bucko")
 
-	with open(keyfile,'rb') as k:
-		keyfile=k.read()
-	with open(messagefile,'rb') as m:
-		message=m.read()
-
-	lengthmessage=len(message)
-	print(message)
-
-	for i in range(0,lengthmessage,16):
-		for j in range(i):
-			print(j)
-
-
-
+	fout.close()
 
 if __name__ == "__main__":
 	exit(main())
