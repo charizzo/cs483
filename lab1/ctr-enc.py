@@ -22,7 +22,7 @@ def main():
 	messageBlocks = []
 	fin = open(argv[4],"rb")
 	while 1:
-		temp = bytearray(fin.read(16).strip())
+		temp = bytearray(fin.read(16)) #Getting rid of strip like with cbc
 		if temp == bytes('','utf-8'):
 			break
 		messageBlocks.append(temp)
