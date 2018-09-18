@@ -24,7 +24,7 @@ def main():
 	fout.write(IV)
 	with open(argv[4],"rb") as inputFile:
 		while 1:
-			messageBlock = bytearray(inputFile.read(16).strip())
+			messageBlock = bytearray(inputFile.read(16)
 			if(len(messageBlock) != 16 and messageBlock != bytes('','utf-8')):
 				flag = False;
 				padding = 16 - len(messageBlock)
