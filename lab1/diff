@@ -1,0 +1,76 @@
+24,25c24,25
+< 		iv=bytearray(f.read(16).strip())
+< 	#	print(len(iv))
+---
+> 		iv=f.read(16).strip()
+> 		intiv=int.from_bytes(iv, byteorder='big')
+27c27
+< 			msg=f.read(16).strip()
+---
+> 			msg=bytearray(f.read(16).strip())
+30,31c30,31
+< 			msg2=bytearray(decipher.decrypt(msg))
+< 		#	print(msg2)
+---
+> 			iv2=bytearray(decipher.decrypt(iv))
+> #			print(iv2)
+33c33
+< 				output[x]=iv[x] ^ msg2[x] 
+---
+> 				output[x]=iv2[x] ^ msg[x] 
+35,36c35
+< 				#print(chr(output[x]))
+< 			iv=msg
+---
+> 			intiv+=1
+#!/usr/bin/env python3						#!/usr/bin/env python3
+from Crypto.Cipher import AES					from Crypto.Cipher import AES
+from sys import argv, exit					from sys import argv, exit
+import sys							import sys
+from io import BytesIO						from io import BytesIO
+import binascii							import binascii
+
+def main():							def main():
+
+	keyfile=sys.argv[1]						keyfile=sys.argv[1]
+	encryptedfile=sys.argv[2]					encryptedfile=sys.argv[2]
+	outputfile=sys.argv[3]						outputfile=sys.argv[3]
+
+	f=open(keyfile,"r")						f=open(keyfile,"r")
+	hex_key=f.read()						hex_key=f.read()
+	key=bytes.fromhex(hex_key)					key=bytes.fromhex(hex_key)
+	decipher = AES.new(key, AES.MODE_ECB)				decipher = AES.new(key, AES.MODE_ECB)
+
+	o=open(outputfile,'w')						o=open(outputfile,'w')
+	output=[1]*16							output=[1]*16
+	final=""							final=""
+
+	with open(encryptedfile, 'rb') as f:				with open(encryptedfile, 'rb') as f:
+		iv=bytearray(f.read(16).strip())	      |			iv=f.read(16).strip()
+	#	print(len(iv))				      |			intiv=int.from_bytes(iv, byteorder='big')
+		while 1:							while 1:
+			msg=f.read(16).strip()		      |				msg=bytearray(f.read(16).strip())
+			if msg == bytes('','utf-8'):					if msg == bytes('','utf-8'):
+				break								break
+			msg2=bytearray(decipher.decrypt(msg)) |				iv2=bytearray(decipher.decrypt(iv))
+		#	print(msg2)			      |	#			print(iv2)
+			for x in range(16):						for x in range(16):
+				output[x]=iv[x] ^ msg2[x]     |					output[x]=iv2[x] ^ msg[x] 
+				final+=(chr(output[x]))						final+=(chr(output[x]))
+				#print(chr(output[x]))	      |				intiv+=1
+			iv=msg				      <
+
+	shred=ord(final[len(final)-1])					shred=ord(final[len(final)-1])
+	if shred == 0:							if shred == 0:
+		o.write(final)							o.write(final)
+	else:								else:
+		final = final[:-shred]						final = final[:-shred]
+		print(shred)							print(shred)
+		o.write(final)							o.write(final)
+									
+
+
+
+
+if __name__ == "__main__":					if __name__ == "__main__":
+	exit(main())							exit(main())
