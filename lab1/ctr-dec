@@ -10,41 +10,30 @@ def main():
 	encryptedfile=sys.argv[2]
 	outputfile=sys.argv[3]
 
-	f=open(keyfile,"r")
-	hex_key=f.read()
+	p=open(keyfile,"r")
+	hex_key=p.read()
+	p.close()
 	key=bytes.fromhex(hex_key)
 	decipher = AES.new(key, AES.MODE_ECB)
 
-	o=open(outputfile,'w')
-	output=[1]*16
-	final=""
+	o=open(outputfile,'wb')
+	final=[]
 
 	with open(encryptedfile, 'rb') as f:
 		iv=f.read(16)
 		intiv=int.from_bytes(iv, byteorder='big')
 		intiv+=1
-		intiv=np.dtype(int16)
 		while 1:
 			msg=bytearray(f.read(16))
 			if msg == bytes('','utf-8'):
 				break
-			iv2=bytearray(decipher.decrypt(intiv))
-			for x in range(16):
-				output[x]=iv2[x] ^ msg[x] 
-				final+=(chr(output[x]))
+			iv2=bytearray(decipher.decrypt(intiv.to_bytes(16,byteorder='big')))
+			for x in range(len(msg)):
+				final.append(iv2[x] ^ msg[x])
+				print(chr(final[x]))
 			intiv+=1
 
-	shred=ord(final[len(final)-1])
-	if shred == 0:
-		o.write(final)
-	else:
-		final = final[:-shred]
-		print(shred)
-		o.write(final)
-	
-
-
-
+	o.write(bytes(final))
 
 if __name__ == "__main__":
 	exit(main())
