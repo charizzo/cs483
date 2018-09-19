@@ -27,10 +27,9 @@ def main():
 			msg=bytearray(f.read(16))
 			if msg == bytes('','utf-8'):
 				break
-			iv2=bytearray(decipher.decrypt(intiv.to_bytes(16,byteorder='big')))
+			iv2=bytearray(decipher.encrypt(intiv.to_bytes(16,byteorder='big')))
 			for x in range(len(msg)):
 				final.append(iv2[x] ^ msg[x])
-				print(chr(final[x]))
 			intiv+=1
 
 	o.write(bytes(final))

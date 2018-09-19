@@ -14,7 +14,6 @@ def main():
 	fin = open(argv[2],"r")
 	hexKey = fin.read()
 	fin.close()
-
 	fout = open(argv[6],"wb+")
 
 	counter = 0
@@ -28,7 +27,7 @@ def main():
 		counter += 1
 	fin.close()	
 
-	IV = bytearray(os.urandom(16))
+	IV = bytes(os.urandom(16))
 	IVint=int.from_bytes(IV,byteorder='big')
 	IVint += 1
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
@@ -38,7 +37,6 @@ def main():
 		interMed = bytearray(cipher.encrypt(IVint.to_bytes(16,byteorder='big')))
 		for j in range (0,len(messageBlocks[i])):
 			messageBlocks[i][j] ^= interMed[i]
-		print(len(messageBlocks[i]))	
 		fout.write(messageBlocks[i])
 		IVint+=1
 
