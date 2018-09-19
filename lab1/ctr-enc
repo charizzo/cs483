@@ -35,10 +35,11 @@ def main():
 	fout.write(IV)
 
 	for i in range (0,counter):
+		output = []
 		interMed = bytearray(cipher.encrypt(IVint.to_bytes(16,byteorder='big')))
 		for j in range (0,len(messageBlocks[i])):
-			interMed[i] ^=	messageBlocks[i][j]
-		fout.write(interMed)
+			messageBlocks[i][j] ^= interMed[i]
+		fout.write(messageBlocks[i])
 		IVint+=1
 
 	fout.close()
@@ -46,12 +47,12 @@ def main():
 #		cipherTexts = [[p.apply(encrypt,args=(x,y,hexKey)) for x in messageBlocks] for y in range(int.from_bytes(IV,byteorder='big')+1,int.from_bytes(IV,byteorder='big') + len(messageBlocks) + 1)]
 
 
-#def encrypt(msg,IV,hexKey):
-#	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
-#	interMed = bytearray(cipher.encrypt(bytes(IV)))
-#	for i in range (0,16):
-#		msg[i] ^= interMed[i]
-#	return msg	
+def encrypt(msg,IV,hexKey):
+	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
+	interMed = bytearray(cipher.encrypt(IV.to_bytes(16,byteorder='big')))
+	for i in range (0,len(msg)):
+		msg[i] ^= interMed[i]
+	return msg	
 	
 
 
