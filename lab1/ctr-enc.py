@@ -17,12 +17,11 @@ def main():
 
 	fout = open(argv[6],"wb+")
 
-
 	counter = 0
 	messageBlocks = []
 	fin = open(argv[4],"rb")
 	while 1:
-		temp = bytearray(fin.read(16)) #Getting rid of strip like with cbc
+		temp = bytearray(fin.read(16)) 
 		if temp == bytes('','utf-8'):
 			break
 		messageBlocks.append(temp)
@@ -30,19 +29,18 @@ def main():
 	fin.close()	
 
 	IV = os.urandom(16)
-	bitch=int.from_bytes(IV,byteorder='big')
+	IVint=int.from_bytes(IV,byteorder='big')
+	IVint += 1
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
 	fout.write(IV)
 
 	for i in range (0,counter):
-		strmsg=format(bitch,'0128b')
-		interMed = bytearray(cipher.encrypt(strmsg))
-		print(interMed)
+		strmsg=format(IVint,'0128b')
+		interMed = bytearray(cipher.encrypt(bytes(strmsg,'utf-8')))
 		for j in range (0,len(messageBlocks[i])):
-			print()
 			interMed[i] ^=	messageBlocks[i][j]
 		fout.write(interMed)
-		bitch+=1
+		IVint+=1
 
 	fout.close()
 #	with Pool(4) as p:
