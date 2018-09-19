@@ -35,10 +35,10 @@ def main():
 	fout.write(IV)
 
 	for i in range (0,counter):
-		output = []
 		interMed = bytearray(cipher.encrypt(IVint.to_bytes(16,byteorder='big')))
 		for j in range (0,len(messageBlocks[i])):
 			messageBlocks[i][j] ^= interMed[i]
+		print(len(messageBlocks[i]))	
 		fout.write(messageBlocks[i])
 		IVint+=1
 
