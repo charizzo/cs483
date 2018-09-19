@@ -28,24 +28,14 @@ def main():
 		counter += 1
 	fin.close()	
 
-	IV = os.urandom(16)
+	IV = bytearray(os.urandom(16))
 	IVint=int.from_bytes(IV,byteorder='big')
 	IVint += 1
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
 	fout.write(IV)
 
 	for i in range (0,counter):
-		strmsg=format(IVint,'0128b')
-		for a in range(0,128,8):
-			for s in range(8):
-				byte+=strmsg[a]
-
-
-
-
-
-
-		interMed = bytearray(cipher.encrypt(bytes(strmsg,'utf-8')))
+		interMed = bytearray(cipher.encrypt(IVint.to_bytes(16,byteorder='big')))
 		for j in range (0,len(messageBlocks[i])):
 			interMed[i] ^=	messageBlocks[i][j]
 		fout.write(interMed)
