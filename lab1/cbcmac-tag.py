@@ -13,16 +13,20 @@ def main():
 	fin = open(argv[2],"r")
 	hexKey = fin.read().strip()
 	fin.close()
+	
 	fout = open(argv[6],"wb+")
+	
 	blockCipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
+	
 	fin = open(argv[4],"rb")
 	msgToTag = fin.read().strip()
 	msgSize = len(msgToTag)
 	fin.close()
+	
 	fin = open(argv[4],"rb")
 	strmsg=format(msgSize,'0128b')
-	#SIZE OF MESSAGE NEEDS TO BE PADDED
 	prevBlock = bytearray(blockCipher.encrypt(strmsg))
+	
 	while 1:
 		msgToTag = bytearray(fin.read(16).strip())
 		if(len(msgToTag) != 16 and msgToTag != bytes('','utf-8')):
