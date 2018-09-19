@@ -28,7 +28,7 @@ def main():
 		counter += 1
 	fin.close()	
 
-	IV = bytearray(os.urandom(16))
+	IV = bytes(os.urandom(16))
 	IVint=int.from_bytes(IV,byteorder='big')
 	IVint += 1
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
