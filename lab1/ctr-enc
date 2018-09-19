@@ -12,7 +12,7 @@ def main():
 		raise Exception("Bad Command Line Args")
 
 	fin = open(argv[2],"r")
-	hexKey = fin.read().strip()
+	hexKey = fin.read()
 	fin.close()
 
 	fout = open(argv[6],"wb+")
@@ -32,7 +32,7 @@ def main():
 	IVint=int.from_bytes(IV,byteorder='big')
 	IVint += 1
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
-	fout.write(IV)
+	fout.write(bytes(IV))
 
 	for i in range (0,counter):
 		interMed = bytearray(cipher.encrypt(IVint.to_bytes(16,byteorder='big')))
