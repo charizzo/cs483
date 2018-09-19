@@ -7,9 +7,27 @@ import binascii
 
 def main():
 
-	keyfile=sys.argv[1]
-	encryptedfile=sys.argv[2]
-	outputfile=sys.argv[3]
+	if len(argv) != 7:
+		print("not enough arguments")
+		return
+
+	keything=sys.argv[1]
+	keyfile=sys.argv[2]
+	ithing=sys.argv[3]
+	encryptedfile=sys.argv[4]
+	othing=sys.argv[5]
+	outputfile=sys.argv[6]
+
+	if keything !="-k":
+		print(keything + " is an unknown operation")
+		return
+	if ithing !="-i":
+		print(ithing + " is an unknown operation")
+		return
+	if othing !="-o":
+		print(othing + " is an unknown operation")
+		return
+
 
 	f=open(keyfile,"r")
 	hex_key=f.read()
@@ -33,11 +51,8 @@ def main():
 			iv=msg
 
 	shred = final[len(final) - 1]
-	if shred == 0:
-		o.write(str.encode(final))
-	else:
-		final = final[:-shred]
-		o.write(bytes(final))
+	final = final[:-shred]
+	o.write(bytes(final))
 
 
 
