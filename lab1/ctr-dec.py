@@ -29,7 +29,8 @@ def main():
 			if msg == bytes('','utf-8'):
 				break
 			iv=intiv
-			iv2=bytearray(decipher.decrypt(iv))
+			striv=format(iv,'0128b')
+			iv2=bytearray(decipher.decrypt(bytes(striv,'utf-8')))
 			for x in range(16):
 				output[x]=iv2[x] ^ msg[x] 
 				final+=(chr(output[x]))

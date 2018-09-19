@@ -36,6 +36,15 @@ def main():
 
 	for i in range (0,counter):
 		strmsg=format(IVint,'0128b')
+		for a in range(0,128,8):
+			for s in range(8):
+				byte+=strmsg[a]
+
+
+
+
+
+
 		interMed = bytearray(cipher.encrypt(bytes(strmsg,'utf-8')))
 		for j in range (0,len(messageBlocks[i])):
 			interMed[i] ^=	messageBlocks[i][j]
