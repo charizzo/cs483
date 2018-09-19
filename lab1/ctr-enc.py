@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 from Crypto import Random
 from multiprocessing import Pool
 import os.path
+import numpy as np
 
 def main():
 	if len(argv) != 7:
@@ -35,8 +36,7 @@ def main():
 	fout.write(IV)
 
 	for i in range (0,counter):
-		strmsg=format(IVint,'0128b')
-		interMed = bytearray(cipher.encrypt(bytes(strmsg,'utf-8')))
+		interMed = bytearray(cipher.encrypt(bytes(IVint)))
 		for j in range (0,len(messageBlocks[i])):
 			interMed[i] ^=	messageBlocks[i][j]
 		fout.write(interMed)
