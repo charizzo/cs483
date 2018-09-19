@@ -2,8 +2,7 @@
 from Crypto.Cipher import AES
 from sys import argv, exit
 import sys
-from io import BytesIO
-import binascii
+import numpy as np
 
 def main():
 
@@ -24,17 +23,15 @@ def main():
 		iv=f.read(16)
 		intiv=int.from_bytes(iv, byteorder='big')
 		intiv+=1
+		intiv=np.dtype(int16)
 		while 1:
 			msg=bytearray(f.read(16))
 			if msg == bytes('','utf-8'):
 				break
-			iv=intiv
-			striv=format(iv,'0128b')
-			iv2=bytearray(decipher.decrypt(bytes(striv,'utf-8')))
+			iv2=bytearray(decipher.decrypt(intiv))
 			for x in range(16):
 				output[x]=iv2[x] ^ msg[x] 
 				final+=(chr(output[x]))
-		#		print(chr(output[x]))
 			intiv+=1
 
 	shred=ord(final[len(final)-1])
