@@ -7,6 +7,8 @@ from multiprocessing import Pool
 import os.path
 import threading
 
+cipher = ''
+
 def main():
 	if len(argv) != 7:
 		print("Usage: ./ctr-enc.py -k <key file> -i <input file> -o <output file>")
@@ -27,6 +29,8 @@ def main():
 		messageBlocks.append(temp)
 		counter += 1
 	fin.close()	
+	
+	global cipher
 
 	IV = bytes(os.urandom(16))
 	IVint=int.from_bytes(IV,byteorder='big')
@@ -43,30 +47,29 @@ def main():
 
 #	fout.close()
 # make a tuple of block and y 
-	plz=()
+#	ivMsgTup=()
+	ivMsgTup=[]
 	for x in messageBlocks:
-		plz=plz+(x,IVint)			
+		ivMsgTup.append((x,IVint))
 		IVint+=1
 
-	print(plz)
 	with Pool(4) as p:
-		cipherTexts = [p.apply(encrypt,args=(plz[x],plz[x+1],hexKey)) for x in range(0,len(plz)-1,2)]
+#		cipherTexts = [p.map(encrypt,args=(ivMsgTup[x],ivMsgTup[x+1],hexKey)) for x in range(0,len(ivMsgTup)-1,2)]
+		cipherTexts=[p.map(encrypt,ivMsgTup)]
 
-	for a in range(0,len(cipherTexts)):
-		fout.write(cipherTexts)
-		print(cipherTexts[a])	
+	for a in range(len(cipherTexts[0])):
+		fout.write(cipherTexts[0][a])
 	fout.close()
 
-def encrypt(msg,IV,hexKey):
-#	print(msg)
-#	print(IV)
-#	print()
-	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
-	interMed = bytearray(cipher.encrypt(IV.to_bytes(16,byteorder='big')))
-	for i in range (0,len(msg)):
-		msg[i] ^= interMed[i]
+def encrypt(tup):
+#	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
+	global cipher
+	interMed = bytearray(cipher.encrypt(tup[1].to_bytes(16,byteorder='big')))
+	for i in range (0,len(tup[0])):
+		tup[0][i] ^= interMed[i]
 
-	return msg	
+	
+	return tup[0]	
 	
 
 
