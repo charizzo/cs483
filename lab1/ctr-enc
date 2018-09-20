@@ -52,16 +52,15 @@ def main():
 	with Pool(4) as p:
 		cipherTexts = [p.apply(encrypt,args=(plz[x],plz[x+1],hexKey)) for x in range(0,len(plz)-1,2)]
 
-#	print(len(cipherTexts))
 	for a in range(0,len(cipherTexts)):
-		fout.write(str(cipherTexts[a]).encode())
+		fout.write(cipherTexts)
 		print(cipherTexts[a])	
 	fout.close()
 
 def encrypt(msg,IV,hexKey):
-	print(msg)
-	print(IV)
-	print()
+#	print(msg)
+#	print(IV)
+#	print()
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
 	interMed = bytearray(cipher.encrypt(IV.to_bytes(16,byteorder='big')))
 	for i in range (0,len(msg)):
