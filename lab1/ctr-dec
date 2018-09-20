@@ -2,7 +2,26 @@
 from Crypto.Cipher import AES
 from sys import argv, exit
 import sys
-import numpy as np
+import threading
+import multiprocessing
+
+final={}
+
+def decrypt(decipher,msg,num):
+	lock=multiprocessing.Lock()
+	bleh=[]
+	lock.acquire()
+	iv2=bytearray(decipher.encrypt(num.to_bytes(16,byteorder='big')))
+	for x in range(len(msg)):
+		print()
+		print(iv2[x],"iv2")
+		print(msg[x],"msg")
+		print()
+		bleh.append(iv2[x] ^ msg[x])
+	final.update({num:bleh})
+	lock.release()
+
+
 
 def main():
 	
@@ -32,10 +51,11 @@ def main():
 	hex_key=p.read()
 	p.close()
 	key=bytes.fromhex(hex_key)
-	decipher = AES.new(key, AES.MODE_ECB)
 
+	decipher = AES.new(key, AES.MODE_ECB)
 	o=open(outputfile,'wb')
-	final=[]
+	last=[]
+	threads=[]
 
 	with open(encryptedfile, 'rb') as f:
 		iv=bytes(f.read(16))
@@ -45,12 +65,21 @@ def main():
 			msg=bytearray(f.read(16))
 			if msg == bytes('','utf-8'):
 				break
-			iv2=bytearray(decipher.encrypt(intiv.to_bytes(16,byteorder='big')))
-			for x in range(len(msg)):
-				final.append(iv2[x] ^ msg[x])
+			thread=threading.Thread(target=decrypt,args=(decipher,msg,intiv))
+			thread.start()
+			threads.append(thread)
 			intiv+=1
 
-	o.write(bytes(final))
+
+	for x in range(len(threads)):
+		threads[x].join()
+	sorted(final)
+	for i in final.values():
+		for j in i:
+			last.append(j)
+			print(j)
+	
+	o.write(bytes(last))
 
 if __name__ == "__main__":
 	exit(main())
