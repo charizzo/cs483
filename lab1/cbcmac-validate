@@ -21,7 +21,6 @@ def main():
 	fin.close()
 	fin = open(argv[4],"rb")
 	strmsg=format(msgSize,'0128b')
-	#SIZE OF MESSAGE NEEDS TO BE PADDED
 	prevBlock = bytearray(blockCipher.encrypt(strmsg))
 	while 1:
 		msgToTag = bytearray(fin.read(16).strip())
@@ -39,9 +38,9 @@ def main():
 	fin.close()
 	stringcmpr=bytearray(fout.read())
 	if stringcmpr == prevBlock:
-		print("VALIDATED")
+		print("True")
 	else:
-		print("sorry bucko")
+		print("False")
 
 	fout.close()
 

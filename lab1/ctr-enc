@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 from Crypto import Random
 from multiprocessing import Pool
 import os.path
+import threading
 
 def main():
 	if len(argv) != 7:
@@ -33,23 +34,29 @@ def main():
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
 	fout.write(bytes(IV))
 
-	for i in range (0,counter):
-		interMed = bytearray(cipher.encrypt(IVint.to_bytes(16,byteorder='big')))
-		for j in range (0,len(messageBlocks[i])):
-			messageBlocks[i][j] ^= interMed[i]
-		fout.write(messageBlocks[i])
-		IVint+=1
+#	for i in range (0,counter):
+#		interMed = bytearray(cipher.encrypt(IVint.to_bytes(16,byteorder='big')))
+#		for j in range (0,len(messageBlocks[i])):
+#			messageBlocks[i][j] ^= interMed[i]
+#		fout.write(messageBlocks[i])
+#		IVint+=1
 
+#	fout.close()
+	with Pool(4) as p:
+		cipherTexts = [[p.apply(encrypt,args=(x,y,hexKey)) for x in messageBlocks] for y in range(IVint+1, IVint + len(messageBlocks) + 1)]		
+
+	print(len(cipherTexts))
+	for a in range(0,len(cipherTexts)):
+		fout.write(str(cipherTexts[a]).encode())
+		print(cipherTexts[a])	
 	fout.close()
-#	with Pool(4) as p:
-#		cipherTexts = [[p.apply(encrypt,args=(x,y,hexKey)) for x in messageBlocks] for y in range(int.from_bytes(IV,byteorder='big')+1,int.from_bytes(IV,byteorder='big') + len(messageBlocks) + 1)]
-
 
 def encrypt(msg,IV,hexKey):
 	cipher = AES.new(bytes.fromhex(hexKey),AES.MODE_ECB)
 	interMed = bytearray(cipher.encrypt(IV.to_bytes(16,byteorder='big')))
 	for i in range (0,len(msg)):
 		msg[i] ^= interMed[i]
+
 	return msg	
 	
 
