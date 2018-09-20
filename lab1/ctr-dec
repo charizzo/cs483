@@ -3,25 +3,17 @@ from Crypto.Cipher import AES
 from sys import argv, exit
 import sys
 import threading
-import multiprocessing
+from multiprocessing import Pool
+import os.path
 
-final={}
 
-def decrypt(decipher,msg,num):
-	lock=multiprocessing.Lock()
-	bleh=[]
-	lock.acquire()
+def decrypt(key,msg,num):
+	print(msg)
+	decipher = AES.new(key, AES.MODE_ECB)
 	iv2=bytearray(decipher.encrypt(num.to_bytes(16,byteorder='big')))
 	for x in range(len(msg)):
-		print()
-		print(iv2[x],"iv2")
-		print(msg[x],"msg")
-		print()
-		bleh.append(iv2[x] ^ msg[x])
-	final.update({num:bleh})
-	lock.release()
-
-
+		msg[x]^=iv2[x]
+	return msg
 
 def main():
 	
@@ -52,34 +44,30 @@ def main():
 	p.close()
 	key=bytes.fromhex(hex_key)
 
-	decipher = AES.new(key, AES.MODE_ECB)
 	o=open(outputfile,'wb')
-	last=[]
-	threads=[]
+	msgBlock=[]
 
 	with open(encryptedfile, 'rb') as f:
 		iv=bytes(f.read(16))
 		intiv=int.from_bytes(iv, byteorder='big')
 		intiv+=1
+		count=0
 		while 1:
 			msg=bytearray(f.read(16))
 			if msg == bytes('','utf-8'):
 				break
-			thread=threading.Thread(target=decrypt,args=(decipher,msg,intiv))
-			thread.start()
-			threads.append(thread)
-			intiv+=1
+			msgBlock.append(msg)
 
+	MsgNiv=()
+	for x in msgBlock:
+		MsgNiv+=MsgNiv+(x,intiv)
+		intiv+=1
 
-	for x in range(len(threads)):
-		threads[x].join()
-	sorted(final)
-	for i in final.values():
-		for j in i:
-			last.append(j)
-			print(j)
+	with Pool(4) as p:
+		cipherTexts = [p.apply(decrypt,args=(key,MsgNiv[x],MsgNiv[x+1])) for x in range(0,len(MsgNiv)-1,2)]
 	
-	o.write(bytes(last))
+	for a in range(0,len(cipherTexts)):
+		o.write(bytes(cipherTexts[a]))
 
 if __name__ == "__main__":
 	exit(main())
