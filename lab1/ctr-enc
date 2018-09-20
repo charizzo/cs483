@@ -54,7 +54,7 @@ def main():
 
 #	print(len(cipherTexts))
 	for a in range(0,len(cipherTexts)):
-		fout.write(str(cipherTexts[a]).encode())
+		fout.write(bytes(cipherTexts[a]))
 		print(cipherTexts[a])	
 	fout.close()
 
