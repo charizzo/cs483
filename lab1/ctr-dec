@@ -66,7 +66,6 @@ def main():
 		intiv+=1
 
 	with Pool(4) as p:
-	#	cipherTexts = [p.apply(decrypt,args=(key,MsgNiv[x],MsgNiv[x+1])) for x in range(0,len(MsgNiv)-1,2)]
 		cipherTexts=[p.map(decrypt,MsgNiv)]
 	for a in range(len(cipherTexts[0])):
 		o.write(cipherTexts[0][a])
