@@ -59,6 +59,7 @@ def main():
 
 	for a in range(len(cipherTexts[0])):
 		fout.write(cipherTexts[0][a])
+#		print(cipherTexts[0][a])
 	fout.close()
 
 def encrypt(tup):
