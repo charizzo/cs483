@@ -5,28 +5,27 @@ import hashlib
 
 def main():
 	toHash = 'rizzosaporito'
-	bitsToMatch = 8
+	hexCharsToMatch = 8
 	lastT = ''
 	lastH = ''
 
 	print(toHash)
-	print(encrypt_string(toHash))
 	
-	tortoise = encrypt_string(toHash)[:bitsToMatch]
+	tortoise = encrypt_string(toHash)#[:hexCharsToMatch]
 	hare = tortoise
-	print(tortoise)
 	print(hare)
 
 	while 1:
 		lastT = tortoise
-		tortoise = encrypt_string(tortoise)[:bitsToMatch]
+		tortoise = encrypt_string(tortoise[:hexCharsToMatch])#[:hexCharsToMatch]
 		lastH = hare
-		hare = encrypt_string(encrypt_string(hare)[:bitsToMatch])[:bitsToMatch]
-		if hare == tortoise:
+		hare = encrypt_string(encrypt_string(hare[:hexCharsToMatch])[:hexCharsToMatch])#)[:hexCharsToMatch])[:hexCharsToMatch]
+		if hare[:hexCharsToMatch] == tortoise[:hexCharsToMatch]:
 			break
 
-	print("Found match with %d bits: %s	%s\n" %(bitsToMatch * 4,tortoise,hare))
-	print("Last tortoise: %s	Last hare: %s\n" %(lastT,lastH))
+	print("Found match with %d bits:\n" %(hexCharsToMatch * 4))
+	print("T: %s\nH: %s\n" %(tortoise, hare))
+	print("Last tortoise: %s\nLast hare: %s\n" %(lastT,lastH))
 
 def encrypt_string(stringToHash):
 	shaHash = hashlib.sha256(stringToHash.encode()).hexdigest()
