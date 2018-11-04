@@ -12,15 +12,16 @@ def main():
 	vals = fin.read().splitlines()
 	fin.close()
 	
-	numBitsN = vals[0]
-	N = vals[1]
-	e = vals[2]
+	numBitsN = int(vals[0])
+	N = int(vals[1])
+	e = int(vals[2])
+	r = numBitsN / 2
 
-	fin.open(argv[4],"r")
-	msg = fin.read().strip()	#If not working, might need to get rid of strip(), didn't work when reading bytes
+	fin = open(argv[4],"rb")
+	msg = bytearray(fin.read())
 	fin.close()
 
-
+	print(r)
 
 if __name__ == "__main__":
 	exit(main())
