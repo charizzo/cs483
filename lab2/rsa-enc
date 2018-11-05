@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from sys import argv,exit
 import os.path
@@ -17,11 +17,40 @@ def main():
 	e = int(vals[2])
 	r = numBitsN / 2
 
-	fin = open(argv[4],"rb")
-	msg = bytearray(fin.read())
+	fin = open(argv[4],"r")
+	msg = fin.read()
 	fin.close()
 
-	print(r)
+	element = []
+	element.append(0x0)
+	element.append(0x2)
+
+	for i in range (0,int(r / 8)):
+		randomByte = bytearray(os.urandom(1))
+		if(randomByte[0] == 0x0):
+			i -= 8
+		else:
+			element.append(randomByte[0])
+
+	if r % 8:	#I dont think this would make sense for it to not be a multiple of 8?
+		randomByte = bytearray(os.urandom(1))
+		while randomByte == 0x0:
+			randomByte = bytearray(os.urandom(1))
+		#do some sort of damn bit shift ???
+
+	element.append(0x0)
+	for value in bytearray.fromhex(msg):
+		element.append(value)
+
+	fout = open(argv[6],"w")
+	fout.write(str(int.from_bytes(element,byteorder='big') ** e % N))
+	
+	fout.close()
+	
+	print(element)
+	print(int.from_bytes(element,byteorder='big'))
+	print((int.from_bytes(element,byteorder='big') ** e) % N)
+
 
 if __name__ == "__main__":
 	exit(main())
