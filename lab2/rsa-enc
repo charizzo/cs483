@@ -32,12 +32,6 @@ def main():
 		else:
 			element.append(randomByte[0])
 
-	if r % 8:	#I dont think this would make sense for it to not be a multiple of 8?
-		randomByte = bytearray(os.urandom(1))
-		while randomByte == 0x0:
-			randomByte = bytearray(os.urandom(1))
-		#do some sort of damn bit shift ???
-
 	element.append(0x0)
 	for value in bytearray.fromhex(msg):
 		element.append(value)
