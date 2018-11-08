@@ -23,26 +23,39 @@ def main():
 		check=isprime(q,N)
 	print("q {}".format(q))
 	phiN=(p-1)*(q-1)
-	print(phiN)
-	phiN=3172
+	print("phi N = {}" .format(phiN))
 	for i in smallprime:
 		e=math.gcd(i,phiN)
 		if(e==1):
 			e=i
-			print(e)
+			print("e = {}" .format(e))
 			break
-	d=egcd(e,phiN)
-	print(d)
-			
-def egcd(a,b):
-    if a == 0:
-        return (b, 0, 1)
-    else:
-        g, x, y = egcd(b % a, a)
-        return (g, y - (b // a) * x, x)
+	d = inverse(e, phiN)
+	print("d = {} ".format(d))
+
+
+def inverse(a, b):
+    x = 0
+    y = 1
+    lx = 1
+    ly = 0
+    oa = a
+    ob = b
+    while b != 0:
+        q = a // b
+        (a, b) = (b, a % b)
+        (x, lx) = ((lx - (q * x)), x)
+        (y, ly) = ((ly - (q * y)), y)
+    if lx < 0:
+        lx += ob
+    if ly < 0:
+        ly += oa  
+    return lx
+
 def isprime(a,n):
 	possible = random.randrange(2**(n-1)+1, 2**n)|1
 	return 1 not in ipow(a, possible-1, possible)
+
 def ipow(a,b,n):
     #calculates (a**b)%n via binary exponentiation, yielding itermediate
     #results as Rabin-Miller requires
@@ -62,10 +75,15 @@ def ipow(a,b,n):
         yield A
         t >>= 1
 def bigoleprime(n_length):
-
 	primeNum = number.getPrime(int(n_length))
 	return primeNum
 
+#def bigoleprime(n_length):
+	
+#	for i in range(0,n_length):
+
+
+	
 
 if __name__ == "__main__":
 	exit(main())
