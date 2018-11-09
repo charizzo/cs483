@@ -36,10 +36,10 @@ def main():
 	for value in bytearray.fromhex(msg):
 		element.append(value)
 
-	fout = open(argv[6],"w")
-	fout.write(str(int.from_bytes(element,byteorder='big') ** e % N))
+#	fout = open(argv[6],"w")
+#	fout.write(str(int.from_bytes(element,byteorder='big') ** e % N))
 	
-	fout.close()
+#	fout.close()
 	
 	print(element)
 	print(int.from_bytes(element,byteorder='big'))
