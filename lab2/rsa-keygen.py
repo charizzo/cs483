@@ -57,7 +57,7 @@ def inverse(a, b):
         ly += oa  
     return lx
 
-def isprime(n, k=128):
+def isprime(n, k):
     if n == 2 or n == 3:
         return True
     if n <= 1 or n % 2 == 0:
@@ -84,9 +84,7 @@ def isprime(n, k=128):
 def bigoleprime(length):
 #	primeNum = number.getPrime(int(n_length))
 #	return primeNum
-	# generate random bits
 	p = getrandbits(length)
-	# apply a mask to set MSB and LSB to 1
 	p |= (1 << length - 1) | 1
 	return p
 
