@@ -1,2 +1,42 @@
 #!/usr/bin/env python3
+import sys
 
+def decrypt(m, e, N):
+	final_mod = 1
+	while e > 0:
+		if e & 1 == 1:
+			final_mod *= m
+		m = m**2 % N
+		e >>= 1
+	return final_mod % N
+	
+def main():
+
+	if len(sys.argv) != 7:
+		print("usage %s -k <key file> -i <input file> -o <output file> " % sys.argv[0])
+		exit()
+
+	for i in range(0, 3):
+		if sys.argv[i*2+1] == "-k":
+			keyfile = sys.argv[i*2+2]
+		elif sys.argv[i*2+1] == "-i":
+			inputfile = sys.argv[i*2+2]
+		elif sys.argv[i*2+1] == "-o":
+			outputfile = sys.argv[i*2+2]
+
+	message_size = 64; 
+	keyfile = open(keyfile, "r")
+	n_size = int(keyfile.readline())
+	n = int(keyfile.readline())
+	e = int(keyfile.readline())
+	
+
+	#read in the file in the currect format
+
+	#with open(inputfile, "rb") as f:
+	#	int(f.read(64))
+
+	
+
+if __name__ == "__main__":
+	exit(main())
