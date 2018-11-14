@@ -24,21 +24,23 @@ def main():
 		elif sys.argv[i*2+1] == "-o":
 			outputfile = sys.argv[i*2+2]
 
-	message_size = 64; 
 	keyfile = open(keyfile, "r")
-	n_size = int(keyfile.readline())
+	n_size = int(int(keyfile.readline()) / 2)
 	n = int(keyfile.readline())
 	e = int(keyfile.readline())
 	keyfile.close()
 
-	fin = open(inputfile, "rb") 
-	cipher = bytearray(fin.read())
-	cipher = int.from_bytes(cipher, byteorder='big')
-	m = bytearray([decrypt(cipher, e, n)])[-61:]
+	fin = open(inputfile, "r") 
+	cipher = int(fin.read())
+	m = (decrypt(cipher, e, n)).to_bytes(n_size, byteorder='big')
+	m = bytearray(m)[-int(n_size/16-3):]
+	for b in m:
+		if b == 0:
+			m.pop()
 	fin.close()
 
-	fout = open(outputfile, "rw")
-	fout.write(str(int.from_bytes(m, byteorder='big')))
+	fout = open(outputfile, "w")
+	fout.write(str(m.hex()))
 	fout.close()
 
 if __name__ == "__main__":
