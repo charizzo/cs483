@@ -3,10 +3,19 @@
 from sys import argv,exit
 import os.path
 
+def exponentiation(m, e, N):
+	final_mod = 1
+	while e > 0:
+		if e & 1 == 1:
+			final_mod *= m
+		m = m ** 2 % N
+		e >>= 1
+	return final_mod % N
+
 def main():
-#	if len(argv) != 7:
-#		print("Usage: ./rsa-enc -k <key-file> -i <input-file> -o <output-file>")
-#		raise Exception("Bad Command Line Args")
+	if len(argv) != 7:
+		print("Usage: ./rsa-enc -k <key-file> -i <input-file> -o <output-file>")
+		raise Exception("Bad Command Line Args")
 	
 	fin = open(argv[2],"r")
 	vals = fin.read().splitlines()
@@ -32,24 +41,20 @@ def main():
 		else:
 			element.append(randomByte[0])
 
-	if r % 8:	#I dont think this would make sense for it to not be a multiple of 8?
-		randomByte = bytearray(os.urandom(1))
-		while randomByte == 0x0:
-			randomByte = bytearray(os.urandom(1))
-		#do some sort of damn bit shift ???
-
 	element.append(0x0)
 	for value in bytearray.fromhex(msg):
 		element.append(value)
 
 	fout = open(argv[6],"w")
-	fout.write(str(int.from_bytes(element,byteorder='big') ** e % N))
+#	fout.write(str(int.from_bytes(element,byteorder='big') ** e % N))
+	fout.write(str(exponentiation(int.from_bytes(element,byteorder='big'), e, N)))
 	
 	fout.close()
 	
-	print(element)
-	print(int.from_bytes(element,byteorder='big'))
-	print((int.from_bytes(element,byteorder='big') ** e) % N)
+#	print(element)
+#	print(int.from_bytes(element,byteorder='big'))
+#	print((int.from_bytes(element,byteorder='big') ** e) % N)
+	print(exponentiation(int.from_bytes(element,byteorder='big'), e, N))
 
 
 if __name__ == "__main__":
