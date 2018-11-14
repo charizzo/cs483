@@ -25,7 +25,7 @@ def main():
 			outputfile = sys.argv[i*2+2]
 
 	keyfile = open(keyfile, "r")
-	n_size = int(int(keyfile.readline()) / 2)
+	n_size = int(int(keyfile.readline()) / 16)
 	n = int(keyfile.readline())
 	e = int(keyfile.readline())
 	keyfile.close()
@@ -33,10 +33,19 @@ def main():
 	fin = open(inputfile, "r") 
 	cipher = int(fin.read())
 	m = (decrypt(cipher, e, n)).to_bytes(n_size, byteorder='big')
-	m = bytearray(m)[-int(n_size/16-3):]
-	for b in m:
-		if b == 0:
-			m.pop()
+	m = bytearray(m)
+
+	index = 0;
+	while m[index] == 0x0:
+		index += 1
+	if m[index] == 0x2:
+		index += 1
+	while m[index] != 0x0:
+		index += 1
+	while m[index] == 0x0:
+		index += 1
+	m = m[index-1:]
+	
 	fin.close()
 
 	fout = open(outputfile, "w")
