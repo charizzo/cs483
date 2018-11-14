@@ -29,14 +29,17 @@ def main():
 	n_size = int(keyfile.readline())
 	n = int(keyfile.readline())
 	e = int(keyfile.readline())
-	
+	keyfile.close()
 
-	#read in the file in the currect format
+	fin = open(inputfile, "rb") 
+	cipher = bytearray(fin.read())
+	cipher = int.from_bytes(cipher, byteorder='big')
+	m = bytearray([decrypt(cipher, e, n)])[-61:]
+	fin.close()
 
-	#with open(inputfile, "rb") as f:
-	#	int(f.read(64))
-
-	
+	fout = open(outputfile, "rw")
+	fout.write(str(int.from_bytes(m, byteorder='big')))
+	fout.close()
 
 if __name__ == "__main__":
 	exit(main())
