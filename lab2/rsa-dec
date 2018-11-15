@@ -32,6 +32,9 @@ def main():
 
 	fin = open(inputfile, "r") 
 	cipher = int(fin.read())
+	print(cipher)
+	print(e)
+	print(n)
 	m = (decrypt(cipher, e, n)).to_bytes(n_size, byteorder='big')
 	m = bytearray(m)
 
