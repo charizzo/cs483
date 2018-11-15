@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+import sys
+
+def decrypt(m, e, N):
+	final_mod = 1
+	while e > 0:
+		if e & 1 == 1:
+			final_mod *= m
+		m = m**2 % N
+		e >>= 1
+	return final_mod % N
+	
+def main():
+
+	if len(sys.argv) != 7:
+		print("usage %s -k <key file> -i <input file> -o <output file> " % sys.argv[0])
+		exit()
+
+	for i in range(0, 3):
+		if sys.argv[i*2+1] == "-k":
+			keyfile = sys.argv[i*2+2]
+		elif sys.argv[i*2+1] == "-i":
+			inputfile = sys.argv[i*2+2]
+		elif sys.argv[i*2+1] == "-o":
+			outputfile = sys.argv[i*2+2]
+
+	keyfile = open(keyfile, "r")
+	n_size = int(int(keyfile.readline()) / 16)
+	n = int(keyfile.readline())
+	e = int(keyfile.readline())
+	keyfile.close()
+
+	fin = open(inputfile, "r") 
+	cipher = int(fin.read())
+	m = (decrypt(cipher, e, n)).to_bytes(n_size, byteorder='big')
+	m = bytearray(m)
+
+	index = 0;
+	while m[index] == 0x0:
+		index += 1
+	if m[index] == 0x2:
+		index += 1
+	while m[index] != 0x0:
+		index += 1
+	while m[index] == 0x0:
+		index += 1
+	m = m[index-1:]
+	
+	fin.close()
+
+	fout = open(outputfile, "w")
+	fout.write(str(m.hex()))
+	fout.close()
+
+if __name__ == "__main__":
+	exit(main())

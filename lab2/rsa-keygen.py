@@ -8,7 +8,7 @@ import sys
 
 
 def main():
-	smallprime=[3,5,7,11,13,17,19,23,29]
+	smallprime=[2,3,5,7,11,13,17,19,23,29]
 	trash=sys.argv[1];
 	if trash != "-p":
 		print("error wrong 1st argument")
@@ -22,16 +22,12 @@ def main():
 		print("error wrong 3rd argument")
 	N=sys.argv[6];
 	N=int(N)
-	p=bigoleprime(N)
-	check=isprime(p,N)
 	while(True):
 		p=bigoleprime(N)
 		check=isprime(p,N)
 		if check:
 			break
 	print("P {}".format(p))
-	q=bigoleprime(N)
-	check=isprime(q,N)
 	while(True):
 		q=bigoleprime(N)
 		check=isprime(q,N)
@@ -50,13 +46,14 @@ def main():
 	print("d = {} ".format(d))
 	puk=open(pubkey,"w")
 	puk.write(str(N)+"\n")
-	puk.write(str(phiN)+"\n")
+	puk.write(str(p*q)+"\n")
 	puk.write(str(e)+"\n")
-#	puk.close()
+	puk.close()
 	prik=open(privkey,"w")
 	prik.write(str(N)+"\n")
-	prik.write(str(phiN)+"\n")
+	prik.write(str(p*q)+"\n")
 	prik.write(str(d)+"\n")
+	prik.close()
 
 
 def inverse(a, b):
