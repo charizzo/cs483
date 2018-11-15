@@ -24,7 +24,7 @@ def main():
 	numBitsN = int(vals[0])
 	N = int(vals[1])
 	e = int(vals[2])
-	r = numBitsN / 2
+	r = numBitsN / 4		#Changed this since first line is N and i need n; i.e. numBitsN / 2 / 2
 
 	fin = open(argv[4],"r")
 	msg = fin.read()
@@ -42,18 +42,21 @@ def main():
 			element.append(randomByte[0])
 
 	element.append(0x0)
+	
+	messageLength = len(bytearray.fromhex(msg))
+	for i in range (0,int(r/8) - 3 - messageLength):
+		element.append(0x0)
+	
 	for value in bytearray.fromhex(msg):
 		element.append(value)
 
 	fout = open(argv[6],"w")
-#	fout.write(str(int.from_bytes(element,byteorder='big') ** e % N))
 	fout.write(str(exponentiation(int.from_bytes(element,byteorder='big'), e, N)))
-	
 	fout.close()
 	
-#	print(element)
+	print(element)
+	print(len(element))
 #	print(int.from_bytes(element,byteorder='big'))
-#	print((int.from_bytes(element,byteorder='big') ** e) % N)
 	print(exponentiation(int.from_bytes(element,byteorder='big'), e, N))
 
 
