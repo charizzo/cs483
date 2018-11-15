@@ -34,7 +34,9 @@ def main():
 	element.append(0x0)
 	element.append(0x2)
 
-	for i in range (0,int(r / 8)):
+	messageLength = len(bytearray.fromhex(msg))
+	
+	for i in range (0,int(numBitsN / 2 / 8) - 3 - messageLength):
 		randomByte = bytearray(os.urandom(1))
 		if(randomByte[0] == 0x0):
 			i -= 8
@@ -42,10 +44,6 @@ def main():
 			element.append(randomByte[0])
 
 	element.append(0x0)
-	
-	messageLength = len(bytearray.fromhex(msg))
-	for i in range (0,int(r/8) - 3 - messageLength):
-		element.append(0x0)
 	
 	for value in bytearray.fromhex(msg):
 		element.append(value)
