@@ -32,10 +32,9 @@ def main():
 
 	fin = open(inputfile, "r") 
 	cipher = int(fin.read())
-	print(cipher)
-	print(e)
-	print(n)
-	m = (decrypt(cipher, e, n)).to_bytes(n_size, byteorder='big')
+	print()
+	print(n_size)
+	m = (decrypt(cipher, e, n)).to_bytes(1000, byteorder='big')
 	m = bytearray(m)
 
 	index = 0;
@@ -45,9 +44,9 @@ def main():
 		index += 1
 	while m[index] != 0x0:
 		index += 1
-	while m[index] == 0x0:
+	if m[index] == 0x0:
 		index += 1
-	m = m[index-1:]
+	m = m[index:]
 	
 	fin.close()
 
