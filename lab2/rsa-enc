@@ -52,10 +52,10 @@ def main():
 	fout.write(str(exponentiation(int.from_bytes(element,byteorder='big'), e, N)))
 	fout.close()
 	
-	print(element)
-	print(len(element))
+#	print(element)
+#	print(len(element))
 #	print(int.from_bytes(element,byteorder='big'))
-	print(exponentiation(int.from_bytes(element,byteorder='big'), e, N))
+#	print(exponentiation(int.from_bytes(element,byteorder='big'), e, N))
 
 
 if __name__ == "__main__":
