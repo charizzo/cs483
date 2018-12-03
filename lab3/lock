@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import (
+	Cipher, algorithms, modes
+)
+import os.path, ecdsa
+
+def main():
+#	if len(argv) != 9:
+#		print("Usage: ./lock -d <directory> -p <action-pub-key> -r <action-priv-key> -s <action-subject>")
+#		raise Exception("Bad Command Line Args")
+
+	fin = open(argv[4],"r")
+	lines = fin.read().splitlines()
+	fin.close()
+
+	subject = str(lines[0])
+	keyData = str(lines[1])
+	algorithm = str(lines[2])
+
+	if subject != argv[8]:
+		print("Subjects do not match!")
+		exit()
+	
+	#Gen random 256 AES key
+	AESkey = os.urandom(32)
+	iv = os.urandom(12)
+	encryptor = Cipher(
+		algorithms.AES(AESkey),
+		modes.GCM(iv),
+		backend=default_backend()
+	).encryptor()
+
+	message = b"Hello im bobby"
+	ciphertext = encryptor.update(message) + encryptor.finalize()
+	print(ciphertext)
+	print(encryptor.tag)
+
+	#Uses RSA to encrypt the AES key and store it in keyfile
+#	rsaKey = RSA.importKey(keyData)
+#	cipher = PKCS1_OAEP.new(rsaKey)
+#	AESCiphertext = cipher.encrypt(AESkey)
+#	AESCiphertext = "Testingjunk"
+#	keyfile = argv[2] + "/keyfile"
+#	fout = open(keyfile,"w")
+#	fout.write(AESCiphertext)
+#	fout.close()
+
+#	print(AESkey)
+#	print(AESCiphertext)
+
+	for root,dirs,files in os.walk(argv[2], topdown=True):
+		for name in files:
+			print(os.path.join(root,name))
+			#Basically, open every file, read it all in, encrypt it, spit it back out with the tag and iv i guess?
+		for name in dirs:
+			print(os.path.join(root,name))
+	
+
+
+if __name__ == "__main__":
+	exit(main())
