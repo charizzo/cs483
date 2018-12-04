@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit
+from Crypto.PublicKey import RSA
+import os.path, ecdsa
+
+
+def rsa(subject, pub, priv):
+	key = RSA.generate(2048)
+	
+	f = open(pub, "w")
+	f.write(subject); f.write("\n")
+	f.write(str(key.n)); f.write("\n")
+	f.write(str(key.e)); f.write("\n")
+	f.write("rsa"); f.write("\n")
+	f.close() 
+
+	f = open(priv, "w")
+	f.write(str(key.n)); f.write("\n")
+	f.write(str(key.d)); f.write("\n")
+	f.close()
+
+def ec(subject, pub, priv):
+	key = ecdsa.SigningKey.generate()
+	f = open(pub, "w")
+	f.write(subject); f.write("\n")
+	f.write(str(key.to_pem())); f.write("\n")
+	f.write("ec"); f.write("\n")
+	f.close()
+
+	f = open(priv, "w")
+	f.write(str(key.get_verifying_key().to_pem())); f.write("\n")
+	f.close()
+
+def main():
+
+	if len(argv) != 9:
+		print("Usage: ./keygen -t <rsa/ec> -s <subject> -pub <public key file> -priv <private key file>")
+		exit()
+
+	if argv[2] == "rsa":
+		rsa(argv[4], argv[6], argv[8])
+	elif argv[2] == "ec":
+		ec(argv[4], argv[6], argv[8])
+	else:
+		print("Usage: ./keygen -t <rsa/ec> -s <subject> -pub <public key file> -priv <private key file>")
+		exit()
+
+
+if __name__ == "__main__":
+	exit(main())
