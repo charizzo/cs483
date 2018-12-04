@@ -11,14 +11,16 @@ def rsa(subject, pub, priv):
 	f = open(pub, "w")
 	f.write("rsa"); f.write("\n")
 	f.write(subject); f.write("\n")
-	f.write(str(key.n)); f.write("\n")
-	f.write(str(key.e)); f.write("\n")
+	f.write(str(key.publickey().exportKey("PEM"))); f.write("\n")
+#	f.write(str(key.n)); f.write("\n")
+#	f.write(str(key.e)); f.write("\n")
 	f.close() 
 
 	f = open(priv, "w")
 	f.write("rsa"); f.write("\n");
-	f.write(str(key.n)); f.write("\n")
-	f.write(str(key.d)); f.write("\n")
+	f.write(str(key.exportKey("PEM"))); f.write("\n")
+#	f.write(str(key.n)); f.write("\n")
+#	f.write(str(key.d)); f.write("\n")
 	f.close()
 
 def ec(subject, pub, priv):
