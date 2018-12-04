@@ -17,10 +17,9 @@ def main():
 	fin = open(argv[4],"r")
 	lines = fin.read().splitlines()
 	fin.close()
-
 	subject = str(lines[0])
 	keyData = str(lines[1])
-	algorithm = str(lines[2])
+	algorithm = str(lines[2]) #why do i care about this????
 
 	if subject != argv[8]:
 		print("Subjects do not match!")
@@ -39,14 +38,23 @@ def main():
 #	rsaKey = RSA.importKey(keyData)
 #	cipher = PKCS1_OAEP.new(rsaKey)
 #	AESCiphertext = cipher.encrypt(AESkey)
-#	AESCiphertext = "Testingjunk"
 #	keyfile = argv[2] + "/keyfile"
 #	fout = open(keyfile,"w")
 #	fout.write(AESCiphertext)
 #	fout.close()
 
-#	print(AESkey)
-#	print(AESCiphertext)
+	fin = open(argv[6],"r")
+	lines = fin.read().splitlines()
+	fin.close()
+	subject = str(lines[0])
+	ecKeyData = str(lines[1])
+	algorithm = str(lines[2]) #why do i care????
+
+	sig = ecKeyData.sign(AESCiphertext)
+	keyfileSig = argv[2] + "/keyfile.sig"
+	fout = open(keyfileSig, "w")
+	fout.write(sig)
+	fout.close()
 
 	if argv[2] == "." or argv[2] == "./" or argv[2] == "./.":
 		print("DON'T RUN THIS IN THE CURRENT DIR!!")
@@ -61,7 +69,9 @@ def main():
 #			fout = open(filename, "wb")
 #			ciphertext = encryptor.update(contents) + encryptor.finalize()
 #			fout.write(encryptor.tag)
+#			fout.write("\n")
 #			fout.write(iv)
+#			fout.write("\n")
 #			fout.write(ciphertext)
 #			fout.close()
 			#Basically, open every file, read it all in, encrypt it, spit it back out with the tag and iv i guess?
