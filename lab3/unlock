@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+from ecdsa import VerifyingKey, BadSignatureError
 from sys import argv, exit
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
@@ -7,6 +7,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import (
     Cipher, algorithms, modes
 )
+import os
 import os.path, ecdsa
 import sys
 
@@ -37,16 +38,27 @@ def main():
 	pubkeydata = fin.readline().strip("\n")
 	pubkeyalgo = fin.readline().strip("\n")
 	fin.close()
-	fin = open(keyfile.sig,'r')
-	contents = fin.readline().strip("\n")
-	fin.close()
 
 	if pubkeysubject != subject:
 		print("Subjects did not match")
 		exit()
-	sk = SigningKey.generate()
-	vk = sk.get_verifying_key()
-	assert vk.verify(pubkeydata,contents)
+	vk = VerifyingKey.from_pem(open("privkey").read())
+	message = open(keyfile.sig,"rb").read()
+
+	if vk.verify(pubkeydata, message):
+		os.remove("keyfile.sig")
+		print("good signature")
+	else:
+		print("BAD SIGNATURE")
+	
+	for root, dirs, files in os.walk(directory, topdown=TRUE):
+		for name in files:
+			filename = os.path.join(root,name)
+			fin = open(filename,"rb")
+			iv = fin.readline().strip("\n")
+			tag = fin.readline().strip("\n")
+			data fin.read()
+
 
 	
 #check signature
