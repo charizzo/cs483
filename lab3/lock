@@ -15,11 +15,18 @@ def main():
 #		raise Exception("Bad Command Line Args")
 
 	fin = open(argv[4],"r")
-	lines = fin.read().splitlines()
-	fin.close()
-	subject = str(lines[0])
-	keyData = str(lines[1])
-	algorithm = str(lines[2]) #why do i care about this????
+#	lines = fin.read().splitlines()
+#	fin.close()
+	algorithm = fin.readline().strip("\n")#lines[0].decode()
+	subject = fin.readline().strip("\n")#lines[1].decode()
+	keydata = fin.readline().strip("\n")#lines[2] 
+
+	keydata = keydata[2:]
+	keydata = keydata[:-1]
+	print(algorithm)
+	print(subject)
+	print(type(keydata))
+	print(keydata)
 
 	if subject != argv[8]:
 		print("Subjects do not match!")
@@ -35,26 +42,26 @@ def main():
 	).encryptor()
 
 	#Uses RSA to encrypt the AES key and store it in keyfile
-#	rsaKey = RSA.importKey(keyData)
-#	cipher = PKCS1_OAEP.new(rsaKey)
-#	AESCiphertext = cipher.encrypt(AESkey)
+	rsaKey = RSA.importKey(keydata)
+	cipher = PKCS1_OAEP.new(rsaKey)
+	AESCiphertext = cipher.encrypt(AESkey)
 #	keyfile = argv[2] + "/keyfile"
 #	fout = open(keyfile,"w")
 #	fout.write(AESCiphertext)
 #	fout.close()
 
-	fin = open(argv[6],"r")
-	lines = fin.read().splitlines()
-	fin.close()
-	subject = str(lines[0])
-	ecKeyData = str(lines[1])
-	algorithm = str(lines[2]) #why do i care????
+#	fin = open(argv[6],"r")
+#	lines = fin.read().splitlines()
+#	fin.close()
+#	subject = str(lines[0])
+#	ecKeyData = str(lines[1])
+#	algorithm = str(lines[2]) #why do i care????
 
-	sig = ecKeyData.sign(AESCiphertext)
-	keyfileSig = argv[2] + "/keyfile.sig"
-	fout = open(keyfileSig, "w")
-	fout.write(sig)
-	fout.close()
+#	sig = ecKeyData.sign(AESCiphertext)
+#	keyfileSig = argv[2] + "/keyfile.sig"
+#	fout = open(keyfileSig, "w")
+#	fout.write(sig)
+#	fout.close()
 
 	if argv[2] == "." or argv[2] == "./" or argv[2] == "./.":
 		print("DON'T RUN THIS IN THE CURRENT DIR!!")
