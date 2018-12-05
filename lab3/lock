@@ -11,26 +11,40 @@ from ecdsa import SigningKey
 import os.path, ecdsa
 
 def main():
-#	if len(argv) != 9:
-#		print("Usage: ./lock -d <directory> -p <action-pub-key> -r <action-priv-key> -s <action-subject>")
-#		raise Exception("Bad Command Line Args")
+	if len(argv) != 9:
+		print("Usage: ./lock -d <directory> -p <action-pub-key> -r <action-priv-key> -s <action-subject>")
+		raise Exception("Bad Command Line Args")
 
 	algorithm,subject,rsaKey = readPub(argv[4])
+	algorithm,ecKeyData = readPriv(argv[6])
 
 	if subject != argv[8]:
 		print("Subjects do not match!")
 		exit()
+
+	if argv[2] == "." or argv[2] == "./" or argv[2] == "./." or argv[2] == "..":
+		print("Do you really want to encrypt the decryption program?!")
+		exit()
 	
 	#Gen random 256 AES key
 	AESkey = os.urandom(32)
-	print(AESkey)
-	iv = os.urandom(12)
-	encryptor = Cipher(
-		algorithms.AES(AESkey),
-		modes.GCM(iv),
-		backend=default_backend()
-	).encryptor()
 
+	for root,dirs,files in os.walk(argv[2], topdown=True):
+		for name in files:
+			iv = os.urandom(12)
+			encryptor = Cipher(
+				algorithms.AES(AESkey),
+				modes.GCM(iv),
+				backend=default_backend()
+			).encryptor()
+			with open(os.path.join(root,name), "rb+") as fin:
+				contents = fin.read()
+				fin.truncate()
+				ciphertext = encryptor.update(contents) + encryptor.finalize()
+				fin.write(encryptor.tag);	fin.write("\n".encode())
+				fin.write(iv);	fin.write("\n".encode())
+				fin.write(ciphertext)
+	
 	#Uses RSA to encrypt the AES key and store it in keyfile
 	cipher = PKCS1_OAEP.new(rsaKey)
 	AESCiphertext = cipher.encrypt(AESkey)
@@ -39,33 +53,12 @@ def main():
 	fout.write(AESCiphertext)
 	fout.close()
 
-	algorithm,ecKeyData = readPriv(argv[6])
-
+	#Uses ECDSA to sign the keyfile; signature written to keyfile.sig
 	sig = ecKeyData.sign(AESCiphertext)
 	keyfileSig = argv[2] + "/keyfile.sig"
 	fout = open(keyfileSig, "wb")
 	fout.write(sig)
 	fout.close()
-
-	if argv[2] == "." or argv[2] == "./" or argv[2] == "./.":
-		print("DON'T RUN THIS IN THE CURRENT DIR!!")
-		exit()
-
-#	for root,dirs,files in os.walk(argv[2], topdown=True):
-#		for name in files:
-#			filename = os.path.join(root,name)
-#			fin = open(filename, "rb")
-#			contents = fin.read()
-#			fin.close()
-#			fout = open(filename, "wb")
-#			ciphertext = encryptor.update(contents) + encryptor.finalize()
-#			fout.write(encryptor.tag)
-#			fout.write("\n")
-#			fout.write(iv)
-#			fout.write("\n")
-#			fout.write(ciphertext)
-#			fout.close()
-			#Basically, open every file, read it all in, encrypt it, spit it back out with the tag and iv i guess?
 
 def readPub(filename):
 	f = open(filename, "r")
