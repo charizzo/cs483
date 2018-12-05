@@ -10,6 +10,31 @@ from cryptography.hazmat.primitives.ciphers import (
 import os
 import os.path
 import sys
+import ecdsa
+
+def readPub(filename):
+    f = open(filename, "r")
+    lastline = f.read().split()
+    if lastline[-2] == 'rsa':
+        pubKey = RSA.importKey(open(filename, "r").read())
+
+    else:
+        pubKey = ecdsa.VerifyingKey.from_pem(open(filename, "r").read())
+
+    f.close()
+    return [lastline[-2], lastline[-1], pubKey]
+
+def readPriv(filename):
+    f = open(filename, "r")
+    lastline = f.read().split()
+    if lastline[-1] == 'rsa':
+        privKey = RSA.importKey(open(filename, "r").read())
+
+    else:
+        privKey = ecdsa.SigningKey.from_pem(open(filename, "r").read())
+
+    f.close()
+    return [lastline[-1], privKey]
 
 def main():
 	if len(sys.argv) != 9:
@@ -33,23 +58,14 @@ def main():
 	subject = sys.argv[8]
 	keyfilesig=directory+"/keyfile.sig"
 
+	pubalgo,pubkeysubject,vk=readPub(pubkey)
 
-	fin = open(pubkey,'r')
-	pubkeyalgo = fin.readline().strip("\n")
-	pubkeysubject = fin.readline().strip("\n")
-	pubkeydata = fin.read()
-	fin.close()
-
-	fin = open(privkey,'r')
-	privkeyalgo = fin.readline().strip("\n")
-	privkey = fin.read()
-	fin.close()
+	privkeyalgo, key = readPriv(privkey)
 
 	if pubkeysubject != subject:
 		print("Subjects did not match")
 		exit()
 
-	vk = VerifyingKey.from_pem(pubkeydata)
 	message = open("keyfile",'rb').read()
 	sig = open("keyfile.sig",'rb').read()
 
@@ -58,13 +74,14 @@ def main():
 		print("YAH-WHO")
 	else:
 		print("BAD SIGNATURE")
+		exit()
 	
-	key = RSA.importKey(privkey)
 	cipher = PKCS1_OAEP.new(key)
 	AESKey = cipher.decrypt(message)
-	print(AESKey)
-	exit()	
-	
+
+	if directory=="." or directory=="./":
+		exit()
+
 	for root, dirs, files in os.walk(directory, topdown=TRUE):
 		for name in files:
 			filename = os.path.join(root,name)
@@ -73,13 +90,10 @@ def main():
 			iv = fin.readline().strip("\n")
 			ciphertext= fin.read()
 			decryptor = Cipher(
-				algorithms.AES(pubkeydata), #should not be key here
+				algorithms.AES(AESKey), #should not be key here
 				modes.GCM(iv, tag),
 				backend=default_backend()
 			).decryptor()
-			key = RSA.importKey(privkey)
-			cipher = PKCS1_OAP.new(privkey)
-			message = cipher.decrypt(ciphertext)
 			decryptor.update(message) + decryptor.finalize()
 
 if __name__ == "__main__":
