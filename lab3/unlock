@@ -47,7 +47,6 @@ def main():
 
 	if vk.verify(pubkeydata, message):
 		os.remove("keyfile.sig")
-		print("good signature")
 	else:
 		print("BAD SIGNATURE")
 	
@@ -55,19 +54,14 @@ def main():
 		for name in files:
 			filename = os.path.join(root,name)
 			fin = open(filename,"rb")
-			iv = fin.readline().strip("\n")
 			tag = fin.readline().strip("\n")
+			iv = fin.readline().strip("\n")
 			data fin.read()
-
-
-	
-#check signature
-#decrypt rsa
-#use iv and tag in each file to decrypt aes key
-
-	
-
-
+			decryptor = Cipher(
+				algorithms.AES(key), #should not be key here
+				modes.GCM(iv, tag),
+				backend=default_backend()
+			).decryptor()
 
 if __name__ == "__main__":
     exit(main())
