@@ -8,7 +8,7 @@ from cryptography.hazmat.primitives.ciphers import (
     Cipher, algorithms, modes
 )
 import os
-import os.path, ecdsa
+import os.path
 import sys
 
 def main():
@@ -31,30 +31,39 @@ def main():
 	pubkey = sys.argv[4]
 	privkey = sys.argv[6]
 	subject = sys.argv[8]
+	keyfilesig=directory+"/keyfile.sig"
 
 
 	fin = open(pubkey,'r')
 	pubkeyalgo = fin.readline().strip("\n")
 	pubkeysubject = fin.readline().strip("\n")
-	pubkeydata = fin.readline().strip("\n")
+	pubkeydata = fin.read()
 	fin.close()
 
 	fin = open(privkey,'r')
 	privkeyalgo = fin.readline().strip("\n")
-	privkeysubject = fin.readline().strip("\n")
-	privkey = fin.readline().strip("\n")
+	privkey = fin.read()
 	fin.close()
 
 	if pubkeysubject != subject:
 		print("Subjects did not match")
 		exit()
-	vk = VerifyingKey.from_pem(open("privkey").read())
-	message = open(keyfile.sig,"rb").read()
 
-	if vk.verify(pubkeydata, message):
-		os.remove("keyfile.sig")
+	vk = VerifyingKey.from_pem(pubkeydata)
+	message = open("keyfile",'rb').read()
+	sig = open("keyfile.sig",'rb').read()
+
+	if vk.verify(sig, message):
+	#	os.remove(keyfilesig)
+		print("YAH-WHO")
 	else:
 		print("BAD SIGNATURE")
+	
+	key = RSA.importKey(privkey)
+	cipher = PKCS1_OAEP.new(key)
+	AESKey = cipher.decrypt(message)
+	print(AESKey)
+	exit()	
 	
 	for root, dirs, files in os.walk(directory, topdown=TRUE):
 		for name in files:
