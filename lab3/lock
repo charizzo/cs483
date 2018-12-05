@@ -19,19 +19,14 @@ def main():
 #	fin.close()
 	algorithm = fin.readline().strip("\n")#lines[0].decode()
 	subject = fin.readline().strip("\n")#lines[1].decode()
-	keydata = fin.readline().strip("\n")#lines[2] 
-
-	keydata = keydata[2:]
-	keydata = keydata[:-1]
-	print(algorithm)
-	print(subject)
-	print(type(keydata))
-	print(keydata)
+	keydata = fin.read()#lines[2] 
 
 	if subject != argv[8]:
 		print("Subjects do not match!")
 		exit()
-	
+	fout = open("notogkey",'w')
+	fout.write(keydata)
+
 	#Gen random 256 AES key
 	AESkey = os.urandom(32)
 	iv = os.urandom(12)
