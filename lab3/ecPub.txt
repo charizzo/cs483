@@ -1,6 +1,4 @@
-ec
-charlie
 -----BEGIN PUBLIC KEY-----
-MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEUIMY4XlSbniuJSeB6Hm+vk2BcfOe
-Kk4xVh/4RHqVZbheFhoRIJOo6ogg4PYjsxln
------END PUBLIC KEY-----
+MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEpgR65g+bEffm8NeoaDK7jrRSjUPO
+gdvtVZ1EWREAD4fg7vcstY1gA/N06gW0SbvA
+-----END PUBLIC KEY----- ec charlie

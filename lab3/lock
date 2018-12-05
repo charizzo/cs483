@@ -8,18 +8,14 @@ from cryptography.hazmat.primitives.ciphers import (
 	Cipher, algorithms, modes
 )
 from ecdsa import SigningKey
-import os.path
+import os.path, ecdsa
 
 def main():
 #	if len(argv) != 9:
 #		print("Usage: ./lock -d <directory> -p <action-pub-key> -r <action-priv-key> -s <action-subject>")
 #		raise Exception("Bad Command Line Args")
 
-	fin = open(argv[4],"r")
-	algorithm = fin.readline().strip("\n")
-	subject = fin.readline().strip("\n")
-	keydata = fin.read()
-	fin.close()
+	algorithm,subject,rsaKey = readPub(argv[4])
 
 	if subject != argv[8]:
 		print("Subjects do not match!")
@@ -36,7 +32,6 @@ def main():
 	).encryptor()
 
 	#Uses RSA to encrypt the AES key and store it in keyfile
-	rsaKey = RSA.importKey(keydata)
 	cipher = PKCS1_OAEP.new(rsaKey)
 	AESCiphertext = cipher.encrypt(AESkey)
 	keyfile = argv[2] + "/keyfile"
@@ -44,10 +39,7 @@ def main():
 	fout.write(AESCiphertext)
 	fout.close()
 
-	fin = open(argv[6],"r")
-	algorithm = fin.readline().strip("\n")
-	ecKeyData = SigningKey.from_pem(fin.read())
-	fin.close()
+	algorithm,ecKeyData = readPriv(argv[6])
 
 	sig = ecKeyData.sign(AESCiphertext)
 	keyfileSig = argv[2] + "/keyfile.sig"
@@ -74,6 +66,31 @@ def main():
 #			fout.write(ciphertext)
 #			fout.close()
 			#Basically, open every file, read it all in, encrypt it, spit it back out with the tag and iv i guess?
+
+def readPub(filename):
+	f = open(filename, "r")
+	lastline = f.read().split()
+	if lastline[-2] == 'rsa':
+		pubKey = RSA.importKey(open(filename, "r").read())
+
+	else:
+		pubKey = ecdsa.VerifyingKey.from_pem(open(filename, "r").read())
+
+	f.close()
+	return [lastline[-2], lastline[-1], pubKey]
+
+def readPriv(filename):
+	f = open(filename, "r")
+	lastline = f.read().split()
+	if lastline[-1] == 'rsa':
+		privKey = RSA.importKey(open(filename, "r").read())	
+
+	else:
+		privKey = ecdsa.SigningKey.from_pem(open(filename, "r").read())
+
+	f.close()
+	return [lastline[-1], privKey]
+
 
 if __name__ == "__main__":
 	exit(main())

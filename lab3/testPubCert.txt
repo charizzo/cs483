@@ -1,3 +1,0 @@
-Charlie
-1234567890ABCDE
-rsa

@@ -4,40 +4,69 @@ from sys import argv, exit
 from Crypto.PublicKey import RSA
 import os.path, ecdsa
 
+def readPub(filename):
+	f = open(filename, "r")
+	lastline = f.read().split()
+	if lastline[-2] == 'rsa':
+		pubKey = RSA.importKey(open(filename, "r").read())
+
+	else:
+		pubKey = ecdsa.VerifyingKey.from_pem(open(filename, "r").read())
+
+	f.close()
+	return [lastline[-2], lastline[-1], pubKey]
+
+def readPriv(filename):
+	f = open(filename, "r")
+	lastline = f.read().split()
+	if lastline[-1] == 'rsa':
+		privKey = RSA.importKey(open(filename, "r").read())	
+
+	else:
+		# print(open(filename, "r").read())
+		privKey = ecdsa.SigningKey.from_pem(open(filename, "r").read())
+
+	f.close()
+	return [lastline[-1], privKey]
+
 
 def rsa(subject, pub, priv):
 	key = RSA.generate(2048)
 	
-	f = open(pub, "w")
-	f.write("rsa"); f.write("\n")
-	f.write(subject); f.write("\n")
-#	f.write(str(key.publickey().exportKey("PEM"))); f.write("\n")
-	f.write(key.publickey().exportKey("PEM").decode()); f.write("\n")
-#	f.write(str(key.n)); f.write("\n")
-#	f.write(str(key.e)); f.write("\n")
+	f = open(pub, "wb")
+	pubKey = key.publickey()
+	f.write(pubKey.exportKey('PEM'));
+
+	f = open(pub, "a+")
+	f.write(" rsa "); 
+	f.write(subject);
 	f.close() 
 
-	f = open(priv, "w")
-	f.write("rsa"); f.write("\n");
-#	f.write(str(key.exportKey("PEM"))); f.write("\n")
-	f.write(key.exportKey("PEM").decode()); f.write("\n")
-#	f.write(str(key.n)); f.write("\n")
-#	f.write(str(key.d)); f.write("\n")
-	f.close()
+	f = open(priv, "wb")
+	f.write(key.exportKey('PEM'));
+
+	f = open(priv, "a+")
+	f.write(" rsa");
+	f.close() 
 
 def ec(subject, pub, priv):
 	key = ecdsa.SigningKey.generate()
-	f = open(pub, "w")
-	f.write("ec"); f.write("\n")
-	f.write(subject); f.write("\n")
-#	f.write(str(key.to_pem())); f.write("\n")
-	f.write(key.get_verifying_key().to_pem().decode());
+
+	f = open(pub, "wb")
+	f.write(key.get_verifying_key().to_pem())
+	f.seek(0, os.SEEK_END)           
+	f.seek(f.tell() - 1, os.SEEK_SET) 
+	f.write(b' ec ')
+	
+	f = open(pub, "a+")	
+	f.write(subject)
 	f.close()
 
-	f = open(priv, "w")
-	f.write("ec"); f.write("\n")
-#	f.write(str(key.get_verifying_key().to_pem())); f.write("\n")
-	f.write(key.to_pem().decode()); 
+	f = open(priv, "wb")
+	f.write(key.to_pem())
+
+	f = open(priv, "a+")
+	f.write(" ec ")
 	f.close()
 
 def main():
