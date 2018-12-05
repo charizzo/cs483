@@ -34,9 +34,15 @@ def main():
 
 
 	fin = open(pubkey,'r')
+	pubkeyalgo = fin.readline().strip("\n")
 	pubkeysubject = fin.readline().strip("\n")
 	pubkeydata = fin.readline().strip("\n")
-	pubkeyalgo = fin.readline().strip("\n")
+	fin.close()
+
+	fin = open(privkey,'r')
+	privkeyalgo = fin.readline().strip("\n")
+	privkeysubject = fin.readline().strip("\n")
+	privkey = fin.readline().strip("\n")
 	fin.close()
 
 	if pubkeysubject != subject:
@@ -56,12 +62,16 @@ def main():
 			fin = open(filename,"rb")
 			tag = fin.readline().strip("\n")
 			iv = fin.readline().strip("\n")
-			data fin.read()
+			ciphertext= fin.read()
 			decryptor = Cipher(
-				algorithms.AES(key), #should not be key here
+				algorithms.AES(pubkeydata), #should not be key here
 				modes.GCM(iv, tag),
 				backend=default_backend()
 			).decryptor()
+			key = RSA.importKey(privkey)
+			cipher = PKCS1_OAP.new(privkey)
+			message = cipher.decrypt(ciphertext)
+			decryptor.update(message) + decryptor.finalize()
 
 if __name__ == "__main__":
     exit(main())
