@@ -12,7 +12,7 @@ def rsa(subject, pub, priv):
 	f.write("rsa"); f.write("\n")
 	f.write(subject); f.write("\n")
 #	f.write(str(key.publickey().exportKey("PEM"))); f.write("\n")
-	f.write(str(key.publickey().exportKey('PEM'))); f.write("\n")
+	f.write(key.publickey().exportKey().decode()); f.write("\n")
 #	f.write(str(key.n)); f.write("\n")
 #	f.write(str(key.e)); f.write("\n")
 	f.close() 
