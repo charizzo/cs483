@@ -7,7 +7,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import (
 	Cipher, algorithms, modes
 )
-import os.path, ecdsa
+from ecdsa import SigningKey
+import os.path
 
 def main():
 #	if len(argv) != 9:
@@ -15,20 +16,10 @@ def main():
 #		raise Exception("Bad Command Line Args")
 
 	fin = open(argv[4],"r")
-#	lines = fin.read().splitlines()
-#	fin.close()
-	algorithm = fin.readline().strip("\n")#lines[0].decode()
-	subject = fin.readline().strip("\n")#lines[1].decode()
-	keydata = fin.read()#.split("'")[1]#lines[2] 
-
-	literal = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsEqaKdLd66Vl3har1l0j\nxH2cbowPzqZYAHQMM/8RyL1BA0QXn7ha7zmtdbrWbPTR/nzswO+zOaSl    bzuvC318\n1KPwHNUFGYO7PduhR2nt32eieNiRWQKd8vkMRyklxfDp9Iehmw3djMppAw0cNcnl\nILh214+qrFql3b6NOoM8sCfwfdZcC0W/VkThSEtXof35l+LF3XDbiumwzhMpE8Zq\n1q+BPWs8jhtEKI3AwA97DHjtxJ0ptyz4G76b    D9p4ymxkyNElGgpGH5yYQiyBWn0/\nC4sg/jGVP+ygui6nRgrBEKWHJxCaPX/8kpC2ygq9DsQnYdD6F9rWoZz0a7YvdfMY\n+QIDAQAB\n-----END PUBLIC KEY-----"
-
-	l2 = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsEqaKdLd66Vl3har1l0j\nxH2cbowPzqZYAHQMM/8RyL1BA0QXn7ha7zmtdbrWbPTR/nzswO+zOaSlbzuvC318\n1KPwHNUFGYO7PduhR2nt32eieNiRWQKd8vkMRyklxfDp9Iehmw3djMppAw0cNcnl\nILh214+qrFql3b6NOoM8sCfwfdZcC0W/VkThSEtXof35l+LF3XDbiumwzhMpE8Zq\n1q+BPWs8jhtEKI3AwA97DHjtxJ0ptyz4G76bD9p4ymxkyNElGgpGH5yYQiyBWn0/\nC4sg/jGVP+ygui6nRgrBEKWHJxCaPX/8kpC2ygq9DsQnYdD6F9rWoZz0a7YvdfMY\n+QIDAQAB\n-----END PUBLIC KEY-----"
-
-	print(algorithm)
-	print(subject)
-	print(type(keydata))
-	print(len(keydata), len(literal), len(l2))
+	algorithm = fin.readline().strip("\n")
+	subject = fin.readline().strip("\n")
+	keydata = fin.read()
+	fin.close()
 
 	if subject != argv[8]:
 		print("Subjects do not match!")
@@ -36,6 +27,7 @@ def main():
 	
 	#Gen random 256 AES key
 	AESkey = os.urandom(32)
+	print(AESkey)
 	iv = os.urandom(12)
 	encryptor = Cipher(
 		algorithms.AES(AESkey),
@@ -45,26 +37,23 @@ def main():
 
 	#Uses RSA to encrypt the AES key and store it in keyfile
 	rsaKey = RSA.importKey(keydata)
-	#rsaKey = RSA.importKey(l2)
 	cipher = PKCS1_OAEP.new(rsaKey)
 	AESCiphertext = cipher.encrypt(AESkey)
-#	keyfile = argv[2] + "/keyfile"
-#	fout = open(keyfile,"w")
-#	fout.write(AESCiphertext)
-#	fout.close()
+	keyfile = argv[2] + "/keyfile"
+	fout = open(keyfile,"wb")
+	fout.write(AESCiphertext)
+	fout.close()
 
-#	fin = open(argv[6],"r")
-#	lines = fin.read().splitlines()
-#	fin.close()
-#	subject = str(lines[0])
-#	ecKeyData = str(lines[1])
-#	algorithm = str(lines[2]) #why do i care????
+	fin = open(argv[6],"r")
+	algorithm = fin.readline().strip("\n")
+	ecKeyData = SigningKey.from_pem(fin.read())
+	fin.close()
 
-#	sig = ecKeyData.sign(AESCiphertext)
-#	keyfileSig = argv[2] + "/keyfile.sig"
-#	fout = open(keyfileSig, "w")
-#	fout.write(sig)
-#	fout.close()
+	sig = ecKeyData.sign(AESCiphertext)
+	keyfileSig = argv[2] + "/keyfile.sig"
+	fout = open(keyfileSig, "wb")
+	fout.write(sig)
+	fout.close()
 
 	if argv[2] == "." or argv[2] == "./" or argv[2] == "./.":
 		print("DON'T RUN THIS IN THE CURRENT DIR!!")
