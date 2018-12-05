@@ -82,19 +82,19 @@ def main():
 	if directory=="." or directory=="./":
 		exit()
 
-	for root, dirs, files in os.walk(directory, topdown=TRUE):
+	for root, dirs, files in os.walk(directory, topdown=True):
 		for name in files:
 			filename = os.path.join(root,name)
 			fin = open(filename,"rb")
-			tag = fin.readline().strip("\n")
-			iv = fin.readline().strip("\n")
+			tag = fin.readline().strip("\n".encode())
+			iv = fin.readline().strip("\n".encode())
 			ciphertext= fin.read()
 			decryptor = Cipher(
 				algorithms.AES(AESKey), #should not be key here
 				modes.GCM(iv, tag),
 				backend=default_backend()
 			).decryptor()
-			decryptor.update(message) + decryptor.finalize()
+			print(decryptor.update(message) + decryptor.finalize())
 
 if __name__ == "__main__":
     exit(main())

@@ -7,6 +7,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import (
 	Cipher, algorithms, modes
 )
+from ecdsa import SigningKey
 import os.path, ecdsa
 
 def main():
@@ -20,63 +21,76 @@ def main():
 	algorithm = fin.readline().strip("\n")#lines[0].decode()
 	subject = fin.readline().strip("\n")#lines[1].decode()
 	keydata = fin.read()#lines[2] 
+	if len(argv) != 9:
+		print("Usage: ./lock -d <directory> -p <action-pub-key> -r <action-priv-key> -s <action-subject>")
+		raise Exception("Bad Command Line Args")
 
-	if subject != argv[8]:
-		print("Subjects do not match!")
+	algorithm,subject,rsaKey = readPub(argv[4])
+	algorithm,ecKeyData = readPriv(argv[6])
+
+	if argv[2] == "." or argv[2] == "./" or argv[2] == "./." or argv[2] == "..":
+		print("Do you really want to encrypt the decryption program?!")
 		exit()
-	fout = open("notogkey",'w')
-	fout.write(keydata)
-
+	
 	#Gen random 256 AES key
 	AESkey = os.urandom(32)
-	iv = os.urandom(12)
-	encryptor = Cipher(
-		algorithms.AES(AESkey),
-		modes.GCM(iv),
-		backend=default_backend()
-	).encryptor()
 
+	for root,dirs,files in os.walk(argv[2], topdown=True):
+		for name in files:
+			iv = os.urandom(12)
+			encryptor = Cipher(
+				algorithms.AES(AESkey),
+				modes.GCM(iv),
+				backend=default_backend()
+			).encryptor()
+
+			with open(os.path.join(root,name), "rb") as fin:
+				contents = fin.read()
+			with open(os.path.join(root,name), "wb") as fout:
+				ciphertext = encryptor.update(contents) + encryptor.finalize()
+				fout.write(encryptor.tag);	fout.write("\n".encode())
+				fout.write(iv);	fout.write("\n".encode())
+				fout.write(ciphertext)
+	
 	#Uses RSA to encrypt the AES key and store it in keyfile
-	rsaKey = RSA.importKey(keydata)
 	cipher = PKCS1_OAEP.new(rsaKey)
 	AESCiphertext = cipher.encrypt(AESkey)
-#	keyfile = argv[2] + "/keyfile"
-#	fout = open(keyfile,"w")
-#	fout.write(AESCiphertext)
-#	fout.close()
+	keyfile = argv[2] + "/keyfile"
+	fout = open(keyfile,"wb")
+	fout.write(AESCiphertext)
+	fout.close()
 
-#	fin = open(argv[6],"r")
-#	lines = fin.read().splitlines()
-#	fin.close()
-#	subject = str(lines[0])
-#	ecKeyData = str(lines[1])
-#	algorithm = str(lines[2]) #why do i care????
+	#Uses ECDSA to sign the keyfile; signature written to keyfile.sig
+	sig = ecKeyData.sign(AESCiphertext)
+	keyfileSig = argv[2] + "/keyfile.sig"
+	fout = open(keyfileSig, "wb")
+	fout.write(sig)
+	fout.close()
 
-#	sig = ecKeyData.sign(AESCiphertext)
-#	keyfileSig = argv[2] + "/keyfile.sig"
-#	fout = open(keyfileSig, "w")
-#	fout.write(sig)
-#	fout.close()
+def readPub(filename):
+	f = open(filename, "r")
+	lastline = f.read().split()
+	if lastline[-2] == 'rsa':
+		pubKey = RSA.importKey(open(filename, "r").read())
 
-	if argv[2] == "." or argv[2] == "./" or argv[2] == "./.":
-		print("DON'T RUN THIS IN THE CURRENT DIR!!")
-		exit()
+	else:
+		pubKey = ecdsa.VerifyingKey.from_pem(open(filename, "r").read())
 
-#	for root,dirs,files in os.walk(argv[2], topdown=True):
-#		for name in files:
-#			filename = os.path.join(root,name)
-#			fin = open(filename, "rb")
-#			contents = fin.read()
-#			fin.close()
-#			fout = open(filename, "wb")
-#			ciphertext = encryptor.update(contents) + encryptor.finalize()
-#			fout.write(encryptor.tag)
-#			fout.write("\n")
-#			fout.write(iv)
-#			fout.write("\n")
-#			fout.write(ciphertext)
-#			fout.close()
-			#Basically, open every file, read it all in, encrypt it, spit it back out with the tag and iv i guess?
+	f.close()
+	return [lastline[-2], lastline[-1], pubKey]
+
+def readPriv(filename):
+	f = open(filename, "r")
+	lastline = f.read().split()
+	if lastline[-1] == 'rsa':
+		privKey = RSA.importKey(open(filename, "r").read())	
+
+	else:
+		privKey = ecdsa.SigningKey.from_pem(open(filename, "r").read())
+
+	f.close()
+	return [lastline[-1], privKey]
+
 
 if __name__ == "__main__":
 	exit(main())
