@@ -11,16 +11,6 @@ from ecdsa import SigningKey
 import os.path, ecdsa
 
 def main():
-#	if len(argv) != 9:
-#		print("Usage: ./lock -d <directory> -p <action-pub-key> -r <action-priv-key> -s <action-subject>")
-#		raise Exception("Bad Command Line Args")
-
-	fin = open(argv[4],"r")
-#	lines = fin.read().splitlines()
-#	fin.close()
-	algorithm = fin.readline().strip("\n")#lines[0].decode()
-	subject = fin.readline().strip("\n")#lines[1].decode()
-	keydata = fin.read()#lines[2] 
 	if len(argv) != 9:
 		print("Usage: ./lock -d <directory> -p <action-pub-key> -r <action-priv-key> -s <action-subject>")
 		raise Exception("Bad Command Line Args")
