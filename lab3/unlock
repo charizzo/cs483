@@ -100,7 +100,6 @@ def main():
 			fout = open(filename,'wb').close()
 			fout = open(filename,'wb')
 			i=decryptor.update(ciphertext) + decryptor.finalize()
-	#		print(i.decode())
 			fout.write(i)
 			fout.close()
 
