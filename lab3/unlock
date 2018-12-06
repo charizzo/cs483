@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from ecdsa import VerifyingKey, BadSignatureError
+import os.path,ecdsa,sys
 from sys import argv, exit
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
@@ -7,10 +8,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import (
     Cipher, algorithms, modes
 )
-import os
-import os.path
-import sys
-import ecdsa
+import struct
 
 def readPub(filename):
     f = open(filename, "r")
@@ -85,16 +83,21 @@ def main():
 	for root, dirs, files in os.walk(directory, topdown=True):
 		for name in files:
 			filename = os.path.join(root,name)
-			fin = open(filename,"rb")
+
+			fin = open(filename,'rb')
+
 			tag = fin.readline().strip("\n".encode())
 			iv = fin.readline().strip("\n".encode())
+
 			ciphertext= fin.read()
+
 			decryptor = Cipher(
-				algorithms.AES(AESKey), #should not be key here
+				algorithms.AES(AESKey),
 				modes.GCM(iv, tag),
 				backend=default_backend()
 			).decryptor()
-			print(decryptor.update(message) + decryptor.finalize())
+
+			print(decryptor.update(ciphertext) + decryptor.finalize())
 
 if __name__ == "__main__":
     exit(main())
