@@ -43,7 +43,6 @@ def main():
 				modes.GCM(iv),
 				backend=default_backend()
 			).encryptor()
-
 			with open(os.path.join(root,name), "rb") as fin:
 				contents = fin.read()
 			with open(os.path.join(root,name), "wb") as fout:

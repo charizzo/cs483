@@ -55,6 +55,7 @@ def main():
 	privkey = sys.argv[6]
 	subject = sys.argv[8]
 	keyfilesig=directory+"/keyfile.sig"
+	keyfile=directory+"/keyfile"
 
 	pubalgo,pubkeysubject,vk=readPub(pubkey)
 
@@ -64,12 +65,13 @@ def main():
 		print("Subjects did not match")
 		exit()
 
-	message = open("keyfile",'rb').read()
-	sig = open("keyfile.sig",'rb').read()
+	message = open(keyfile,'rb').read()
+	sig = open(keyfilesig,'rb').read()
 
 	if vk.verify(sig, message):
-	#	os.remove(keyfilesig)
-		print("YAH-WHO")
+		os.remove(keyfilesig)
+		os.remove(keyfile)
+	#	print("YAH-WHO")
 	else:
 		print("BAD SIGNATURE")
 		exit()
@@ -88,16 +90,19 @@ def main():
 
 			tag = fin.readline().strip("\n".encode())
 			iv = fin.readline().strip("\n".encode())
-
 			ciphertext= fin.read()
 
 			decryptor = Cipher(
 				algorithms.AES(AESKey),
-				modes.GCM(iv, tag),
+				modes.GCM(iv,tag),
 				backend=default_backend()
 			).decryptor()
-
-			print(decryptor.update(ciphertext) + decryptor.finalize())
+			fout = open(filename,'wb').close()
+			fout = open(filename,'wb')
+			i=decryptor.update(ciphertext) + decryptor.finalize()
+	#		print(i.decode())
+			fout.write(i)
+			fout.close()
 
 if __name__ == "__main__":
     exit(main())
