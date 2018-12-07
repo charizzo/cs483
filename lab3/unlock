@@ -88,8 +88,8 @@ def main():
 
 			fin = open(filename,'rb')
 
-			tag = fin.readline().strip("\n".encode())
-			iv = fin.readline().strip("\n".encode())
+			tag = fin.read(16)
+			iv = fin.read(12)
 			ciphertext= fin.read()
 
 			decryptor = Cipher(
