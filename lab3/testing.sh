@@ -30,6 +30,14 @@ TEST()
 
 # TEST "out_most/Lecture note"
 
+if [ $# -ne 1 ]; then
+	echo "sh ./testing.sh <dir>"
+	echo "dir:	An outer most directory"
+	echo "	It will run keygen, lock, and unlock on all the subdirectories in <dir>"
+	echo "	So you want to make sure that there isn't anything that is not a directory in <dir>"
+	exit 0
+fi
+
 path=$1
 for dir in $path/*; do 
 	echo "$dir"
