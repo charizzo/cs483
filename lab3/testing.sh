@@ -33,5 +33,5 @@ TEST()
 path=$1
 for dir in $path/*; do 
 	echo "$dir"
-	TEST "$dir" sdbajsd
+	TEST "$dir"
 done
